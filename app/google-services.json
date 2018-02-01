@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "244530538356",
+    "firebase_url": "https://whereyou-39539.firebaseio.com",
+    "project_id": "whereyou-39539",
+    "storage_bucket": "whereyou-39539.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:244530538356:android:9383fc1f5a4fcba3",
+        "android_client_info": {
+          "package_name": "com.techease.whereyou"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "244530538356-9aod6jn643botuil3f2dqpjkd12lde37.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuHvalZ-g9h1cOwDA1tgInjNC_TOEsMKM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

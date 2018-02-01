@@ -1,0 +1,133 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/colorPrimary"
+    tools:context="com.techease.whereyou.ui.fragments.LoginFragment"
+  >
+
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/whereyou"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp"
+        />
+
+
+
+            <belka.us.androidtoggleswitch.widgets.ToggleSwitch
+                    android:layout_width="200sp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/signintoggle"
+                    android:layout_gravity="center"
+                    android:textSize="17sp"
+                    custom:cornerRadius="10dp"
+                    custom:textToggleLeft="@string/signup"
+                    custom:textToggleRight="@string/signin"
+                    custom:toggleWidth="100dp"
+                    custom:separatorColor="#FFF"
+                    custom:activeBgColor="@color/colorAccent"
+                custom:activeTextColor="@color/colorPrimary"
+                custom:inactiveTextColor="@color/colorPrimary"
+                custom:inactiveBgColor="@color/colorPrimaryDark"
+                />
+
+                <EditText
+                    android:id="@+id/et_signin_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_marginRight="30sp"
+                    android:layout_marginLeft="30sp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="50sp"
+                    android:hint="@string/email"
+                    android:inputType="textEmailAddress"
+                    android:shadowColor="@color/colorAccentLight"
+                    android:textColor="@color/colorAccent"
+                    android:textColorHint="@color/colorAccentLight"
+                    android:backgroundTint="@color/colorAccentLight"
+                    />
+
+
+
+                <EditText
+                    android:id="@+id/et_signin_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:hint="@string/password"
+                    android:inputType="textPassword"
+                    android:layout_marginLeft="30sp"
+                    android:layout_marginTop="10sp"
+                    android:layout_marginRight="30sp"
+                    android:shadowColor="@color/colorAccentLight"
+                    android:textColor="@color/colorAccent"
+                    android:backgroundTint="@color/colorAccentLight"
+                    android:textColorHint="@color/colorAccentLight" />
+
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/next"
+                    android:layout_marginTop="20dp"
+                    android:layout_gravity="center"
+                    android:id="@+id/signin_next"
+                    android:background="@color/colorPrimary"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="OR"
+                    android:textColor="@color/colorPrimaryDark"
+                    android:textSize="20sp"
+                    android:layout_marginTop="30sp"
+                    android:layout_gravity="center"
+                    android:textStyle="bold"/>
+
+                <Button
+                    android:id="@+id/signin_btnFb"
+                    android:layout_width="220dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginLeft="10sp"
+                    android:text="@string/fb"
+                    android:drawableLeft="@drawable/facebook_logo"
+                    android:background="@color/colorAccent"
+                    android:drawablePadding="15sp"
+                    android:paddingRight="10sp"
+                    android:layout_marginRight="10sp"
+                    android:paddingLeft="10sp"
+                    android:layout_gravity="center"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryDark" />
+
+                <Button
+                    android:id="@+id/signin_btnGoogle"
+                    android:layout_width="220dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginLeft="10sp"
+                    android:text="@string/google"
+                    android:drawableLeft="@drawable/google"
+                    android:background="@color/colorAccent"
+                    android:drawablePadding="15sp"
+                    android:paddingRight="10sp"
+                    android:layout_marginRight="10sp"
+                    android:paddingLeft="10sp"
+                    android:layout_gravity="center"
+                    android:textAlignment="center"
+                    android:textColor="@color/colorPrimaryDark" />
+
+
+
+
+    </LinearLayout>
