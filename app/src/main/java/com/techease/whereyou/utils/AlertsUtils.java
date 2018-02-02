@@ -7,10 +7,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.techease.whereyou.R;
 
@@ -26,27 +23,7 @@ public class AlertsUtils {
      * @param activity
      */
 
-    public static void showReviewDialog(final Activity activity, String message) {
 
-
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
-        LayoutInflater inflater = activity.getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.custom_reviewdialog
-                , null);
-        dialogBuilder.setView(dialogView);
-        final AlertDialog alertDialog = dialogBuilder.create();
-        TextView tvTown = dialogView.findViewById(R.id.tvAddress);
-        tvTown.setText(message);
-        Button btnReview = dialogView.findViewById(R.id.btnSubmitCustomDialogReview);
-        btnReview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                Toast.makeText(activity, "kaar kai", Toast.LENGTH_SHORT).show();
-            }
-        });
-        alertDialog.show();
-    }
 
     public static AlertDialog createProgressDialog(Activity activity) {
 

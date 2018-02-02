@@ -17,6 +17,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,8 +36,11 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.techease.whereyou.Models.ReviewLocation;
 import com.techease.whereyou.R;
-import com.techease.whereyou.utils.AlertsUtils;
 import com.techease.whereyou.utils.InternetUtils;
 
 import butterknife.BindView;
@@ -53,7 +58,7 @@ public class HomeFragment extends Fragment implements LocationListener {
     @BindView(R.id.mapView)
     MapView mMapView;
 
-    PlaceAutocompleteFragment autocompleteFragment;
+
     int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     boolean bolFlag = false;
     private GoogleMap googleMap;
@@ -63,6 +68,9 @@ public class HomeFragment extends Fragment implements LocationListener {
     private static final long MIN_TIME = 400;
     private static final float MIN_DISTANCE = 1000;
     String Address;
+    float ratingBarValue;
+    FirebaseAuth firebaseAuth;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,15 +81,12 @@ public class HomeFragment extends Fragment implements LocationListener {
         unbinder = ButterKnife.bind(this, v);
         //Declaration
 
+
+
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+
             return v;
         }
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DISTANCE, this);
@@ -196,7 +201,7 @@ public class HomeFragment extends Fragment implements LocationListener {
             }
         }
     }
-    private void MyMethod(GoogleMap googleMap, LatLng latLng) {
+    private void MyMethod(GoogleMap googleMap, final LatLng latLng) {
         googleMap=googleMap;
         LatLng location = latLng;
         Log.d("zma loc",String.valueOf(location));
@@ -208,7 +213,7 @@ public class HomeFragment extends Fragment implements LocationListener {
             @Override
             public boolean onMarkerClick(Marker marker) {
                // AlertsUtils.showMarkerDialog(getActivity(),marker.getTitle());
-                showMarkerDialog(getActivity(),marker.getTitle());
+                showMarkerDialog(getActivity(),marker.getTitle(),latLng);
                 return false;
             }
 
@@ -237,8 +242,48 @@ public class HomeFragment extends Fragment implements LocationListener {
     public void onProviderDisabled(String provider) {
 
     }
+    public static void showReviewDialog(final Activity activity, final String message, final LatLng latLng) {
 
-    public static void showMarkerDialog(final Activity activity, final String message) {
+        final String strTextBox;
+        final float value;
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
+        LayoutInflater inflater = activity.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.custom_reviewdialog
+                , null);
+        dialogBuilder.setView(dialogView);
+        final AlertDialog alertDialog = dialogBuilder.create();
+        TextView tvTown = dialogView.findViewById(R.id.tvAddress);
+        tvTown.setText(message);
+
+        Button btnReview = dialogView.findViewById(R.id.btnSubmitCustomDialogReview);
+        final RatingBar ratingBar=(RatingBar)dialogView.findViewById(R.id.ratingbar);
+        EditText editText=(EditText)dialogView.findViewById(R.id.etTextBox);
+        strTextBox=editText.getText().toString();
+        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar,final float v, boolean b) {
+                ratingBar.setRating(v);
+
+            }
+        });
+        btnReview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth firebaseAuth;
+                firebaseAuth = FirebaseAuth.getInstance();
+             String Uid=   firebaseAuth.getUid();
+                ReviewLocation reviewLocation=new ReviewLocation(Uid,message,strTextBox, latLng,ratingBar.getRating());
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+                database.child("ReviewLocation").child(Uid).setValue(reviewLocation);
+
+
+
+                Toast.makeText(activity, "kaar kai", Toast.LENGTH_SHORT).show();
+            }
+        });
+        alertDialog.show();
+    }
+    public static void showMarkerDialog(final Activity activity, final String message, final LatLng latLng) {
 
 
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
@@ -254,7 +299,7 @@ public class HomeFragment extends Fragment implements LocationListener {
         btnReview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertsUtils.showReviewDialog(activity, "Hello");
+                showReviewDialog(activity, message,latLng);
                 alertDialog.dismiss();
             }
         });
