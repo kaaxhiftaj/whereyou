@@ -24,27 +24,55 @@ public class AlertsUtils {
      *
      * @param activity
      */
-    public static void showErrorDialog(Activity activity, String message) {
+    public static void showMarkerDialog(final Activity activity, final String message) {
 
 
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
         LayoutInflater inflater = activity.getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.alert_dialog
+        final View dialogView = inflater.inflate(R.layout.custom_dialog
                 , null);
         dialogBuilder.setView(dialogView);
         final AlertDialog alertDialog = dialogBuilder.create();
-        TextView tvError = dialogView.findViewById(R.id.tv_error);
-        tvError.setText(message);
-        Button btnOk = dialogView.findViewById(R.id.btn_ok);
-        btnOk.setOnClickListener(new View.OnClickListener() {
+        TextView tvTown = dialogView.findViewById(R.id.tvTownCustomDialog);
+        tvTown.setText(message);
+        Button btnReview = dialogView.findViewById(R.id.btnReviewCustomDialog);
+        Button btnExisting = dialogView.findViewById(R.id.btnReviewCustomDialog);
+        btnReview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 alertDialog.dismiss();
+                showReviewDialog(activity,message);
+            }
+        });
+        btnExisting.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
         alertDialog.show();
     }
 
+    public static void showReviewDialog(Activity activity, String message) {
+
+
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
+        LayoutInflater inflater = activity.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.custom_reviewdialog
+                , null);
+        dialogBuilder.setView(dialogView);
+        final AlertDialog alertDialog = dialogBuilder.create();
+        TextView tvTown = dialogView.findViewById(R.id.tvAddress);
+        tvTown.setText(message);
+        Button btnReview = dialogView.findViewById(R.id.btnSubmitCustomDialogReview);
+        btnReview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+        alertDialog.show();
+    }
 
     public static AlertDialog createProgressDialog(Activity activity) {
 

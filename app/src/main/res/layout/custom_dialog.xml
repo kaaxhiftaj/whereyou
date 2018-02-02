@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="30sp"
+    android:layout_marginRight="30sp"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="80sp"
+            android:id="@+id/ivCustomDialog"
+            android:background="#474747"
+            />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+        <TextView
+            android:id="@+id/tvTownCustomDialog"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="UNIVERSITY ROAD"
+            android:textSize="17sp"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"
+            android:layout_marginLeft="20sp"
+            android:layout_marginTop="15sp"/>
+        </LinearLayout>
+    </FrameLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5sp"
+        android:orientation="horizontal">
+    <Button
+        android:id="@+id/btnReviewCustomDialog"
+        android:layout_width="0sp"
+        android:layout_weight="0.5"
+        android:layout_height="wrap_content"
+        android:text="Review Location"
+        android:background="@drawable/btnripple"
+        android:textAlignment="center"
+        />
+        <Button
+            android:id="@+id/btnExistingCustomDialog"
+            android:layout_width="0sp"
+            android:layout_weight="0.5"
+            android:layout_marginLeft="5sp"
+            android:background="@drawable/btnripple"
+            android:layout_height="wrap_content"
+            android:text="See existing"
+            android:textAlignment="center"
+            />
+    </LinearLayout>
+</LinearLayout>

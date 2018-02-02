@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="80sp"
+            android:id="@+id/ivCustomDialog"
+            android:background="#474747"
+            />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tvAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="UNIVERSITY ROAD"
+                android:textSize="17sp"
+                android:textColor="@color/colorAccent"
+                android:textStyle="bold"
+                android:layout_marginLeft="20sp"
+                android:layout_marginTop="15sp"/>
+        </LinearLayout>
+    </FrameLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <me.zhanghai.android.materialratingbar.MaterialRatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="40sp"
+            android:layout_gravity="center"
+            android:id="@+id/ratingbar"
+            />
+
+        <EditText
+            android:id="@+id/etTextBox"
+            android:layout_width="match_parent"
+            android:layout_height="100sp"
+            android:ems="10"
+            android:inputType="textMultiLine" />
+
+    </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSubmitCustomDialogReview"
+            android:layout_width="150sp"
+            android:layout_marginLeft="5sp"
+            android:layout_marginTop="5sp"
+            android:layout_gravity="center"
+            android:background="@drawable/btnripple"
+            android:layout_height="wrap_content"
+            android:text="See existing"
+            android:textAlignment="center"
+            />
+</LinearLayout>
