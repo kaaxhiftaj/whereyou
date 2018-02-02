@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:src="@drawable/whereyou"
         android:layout_gravity="center"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"
         />
 

@@ -1,12 +1,15 @@
 package com.techease.whereyou.ui.fragments;
 
 import android.Manifest;
-import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.LocationManager;
+import android.net.Uri;
+import android.net.wifi.WifiConfiguration;
 import android.os.Bundle;
+import android.app.Fragment;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
@@ -27,6 +31,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.techease.whereyou.R;
+import com.techease.whereyou.utils.AlertsUtils;
 import com.techease.whereyou.utils.InternetUtils;
 
 import butterknife.BindView;
@@ -36,6 +41,7 @@ import butterknife.Unbinder;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static android.content.ContentValues.TAG;
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 public class HomeFragment extends Fragment {
@@ -48,10 +54,8 @@ public class HomeFragment extends Fragment {
     boolean bolFlag = false;
     private GoogleMap googleMap;
     Unbinder unbinder;
-    LatLng latLng;
-    LocationManager locationManager;
-    private static final long MIN_TIME = 400;
-    private static final float MIN_DISTANCE = 1000;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -72,7 +76,6 @@ public class HomeFragment extends Fragment {
             public void onPlaceSelected(Place place) {
                 // TODO: Get info about the selected place.
                 Log.i("Place: ", place.getAddress().toString());
-                latLng=place.getLatLng();
               //  strLocation = place.getAddress().toString();
                 bolFlag = true;
 
@@ -181,7 +184,6 @@ public class HomeFragment extends Fragment {
             }
         }
     }
-
 
 
 }
