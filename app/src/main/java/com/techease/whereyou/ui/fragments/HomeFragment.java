@@ -242,47 +242,7 @@ public class HomeFragment extends Fragment implements LocationListener {
     public void onProviderDisabled(String provider) {
 
     }
-    public static void showReviewDialog(final Activity activity, final String message, final LatLng latLng) {
 
-        final String strTextBox;
-        final float value;
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
-        LayoutInflater inflater = activity.getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.custom_reviewdialog
-                , null);
-        dialogBuilder.setView(dialogView);
-        final AlertDialog alertDialog = dialogBuilder.create();
-        TextView tvTown = dialogView.findViewById(R.id.tvAddress);
-        tvTown.setText(message);
-
-        Button btnReview = dialogView.findViewById(R.id.btnSubmitCustomDialogReview);
-        final RatingBar ratingBar=(RatingBar)dialogView.findViewById(R.id.ratingbar);
-        EditText editText=(EditText)dialogView.findViewById(R.id.etTextBox);
-        strTextBox=editText.getText().toString();
-        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-            @Override
-            public void onRatingChanged(RatingBar ratingBar,final float v, boolean b) {
-                ratingBar.setRating(v);
-
-            }
-        });
-        btnReview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FirebaseAuth firebaseAuth;
-                firebaseAuth = FirebaseAuth.getInstance();
-             String Uid=   firebaseAuth.getUid();
-                ReviewLocation reviewLocation=new ReviewLocation(Uid,message,strTextBox, latLng,ratingBar.getRating());
-                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-                database.child("ReviewLocation").child(Uid).setValue(reviewLocation);
-
-
-
-                Toast.makeText(activity, "kaar kai", Toast.LENGTH_SHORT).show();
-            }
-        });
-        alertDialog.show();
-    }
     public static void showMarkerDialog(final Activity activity, final String message, final LatLng latLng) {
 
 
@@ -308,6 +268,49 @@ public class HomeFragment extends Fragment implements LocationListener {
             public void onClick(View view) {
 
                 Toast.makeText(activity, "done", Toast.LENGTH_SHORT).show();
+            }
+        });
+        alertDialog.show();
+    }
+
+
+    public static void showReviewDialog(final Activity activity, final String message, final LatLng latLng) {
+
+        final String strTextBox;
+        final float value;
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
+        LayoutInflater inflater = activity.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.custom_reviewdialog
+                , null);
+        dialogBuilder.setView(dialogView);
+        final AlertDialog alertDialog = dialogBuilder.create();
+        TextView tvTown = dialogView.findViewById(R.id.tvAddress);
+        tvTown.setText(message);
+
+        Button btnReview = dialogView.findViewById(R.id.btnSubmitCustomDialogReview);
+        final RatingBar ratingBar=(RatingBar)dialogView.findViewById(R.id.ratingbar);
+        final EditText editText=(EditText)dialogView.findViewById(R.id.etTextBox);
+        strTextBox=editText.getText().toString();
+        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar,final float v, boolean b) {
+                ratingBar.setRating(v);
+
+            }
+        });
+        btnReview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FirebaseAuth firebaseAuth;
+                firebaseAuth = FirebaseAuth.getInstance();
+                String Uid=   firebaseAuth.getUid();
+                ReviewLocation reviewLocation=new ReviewLocation(Uid,message,editText.getText().toString(), latLng,ratingBar.getRating());
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+                database.child("ReviewLocation").child(message).setValue(reviewLocation);
+
+
+
+                Toast.makeText(activity, "kaar kai", Toast.LENGTH_SHORT).show();
             }
         });
         alertDialog.show();
