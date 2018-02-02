@@ -10,6 +10,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.techease.whereyou.R;
 
@@ -24,36 +25,8 @@ public class AlertsUtils {
      *
      * @param activity
      */
-    public static void showMarkerDialog(final Activity activity, final String message) {
 
-
-        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
-        LayoutInflater inflater = activity.getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.custom_dialog
-                , null);
-        dialogBuilder.setView(dialogView);
-        final AlertDialog alertDialog = dialogBuilder.create();
-        TextView tvTown = dialogView.findViewById(R.id.tvTownCustomDialog);
-        tvTown.setText(message);
-        Button btnReview = dialogView.findViewById(R.id.btnReviewCustomDialog);
-        Button btnExisting = dialogView.findViewById(R.id.btnReviewCustomDialog);
-        btnReview.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertDialog.dismiss();
-                showReviewDialog(activity,message);
-            }
-        });
-        btnExisting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-        alertDialog.show();
-    }
-
-    public static void showReviewDialog(Activity activity, String message) {
+    public static void showReviewDialog(final Activity activity, String message) {
 
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
@@ -69,6 +42,7 @@ public class AlertsUtils {
             @Override
             public void onClick(View view) {
 
+                Toast.makeText(activity, "kaar kai", Toast.LENGTH_SHORT).show();
             }
         });
         alertDialog.show();

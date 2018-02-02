@@ -250,18 +250,19 @@ public class HomeFragment extends Fragment implements LocationListener {
         TextView tvTown = dialogView.findViewById(R.id.tvTownCustomDialog);
         tvTown.setText(message);
         Button btnReview = dialogView.findViewById(R.id.btnReviewCustomDialog);
-        Button btnExisting = dialogView.findViewById(R.id.btnReviewCustomDialog);
+        Button btnExisting = dialogView.findViewById(R.id.btnExistingCustomDialog);
         btnReview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                AlertsUtils.showReviewDialog(activity, "Hello");
                 alertDialog.dismiss();
-                AlertsUtils.showReviewDialog(activity,message);
             }
         });
         btnExisting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+                Toast.makeText(activity, "done", Toast.LENGTH_SHORT).show();
             }
         });
         alertDialog.show();
