@@ -1,12 +1,17 @@
 package com.techease.whereyou.ui.fragments;
 
 import android.Manifest;
-import android.app.Fragment;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+
 import android.os.Bundle;
+import android.app.Fragment;
 import android.support.v4.app.ActivityCompat;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +23,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -27,18 +33,21 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.techease.whereyou.R;
+import com.techease.whereyou.utils.AlertsUtils;
 import com.techease.whereyou.utils.InternetUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static android.content.ContentValues.TAG;
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements LocationListener {
 
     @BindView(R.id.mapView)
     MapView mMapView;
@@ -48,18 +57,31 @@ public class HomeFragment extends Fragment {
     boolean bolFlag = false;
     private GoogleMap googleMap;
     Unbinder unbinder;
-    LatLng latLng;
-    LocationManager locationManager;
+    private LocationManager locationManager;
     private static final long MIN_TIME = 400;
     private static final float MIN_DISTANCE = 1000;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
         View v = inflater.inflate(R.layout.fragment_home, container, false);
-        unbinder = ButterKnife.bind(this, v );
+        unbinder = ButterKnife.bind(this, v);
         //Declaration
+
+        locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return v;
+        }
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DISTANCE, this);
 
         mMapView.onCreate(savedInstanceState);
         mMapView.onResume();
@@ -72,7 +94,6 @@ public class HomeFragment extends Fragment {
             public void onPlaceSelected(Place place) {
                 // TODO: Get info about the selected place.
                 Log.i("Place: ", place.getAddress().toString());
-                latLng=place.getLatLng();
               //  strLocation = place.getAddress().toString();
                 bolFlag = true;
 
@@ -112,20 +133,8 @@ public class HomeFragment extends Fragment {
                     }
                     googleMap.setMyLocationEnabled(true);
 
-
-                    LatLng sydney = new LatLng( 34.558, 71.927 );
-                    googleMap.addMarker(new MarkerOptions().position(sydney).title("Me"));
-                    CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
-                    googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-                    
                 }
             });
-
-
-
-
-
 
         }
         else
@@ -183,5 +192,26 @@ public class HomeFragment extends Fragment {
     }
 
 
+    @Override
+    public void onLocationChanged(Location location) {
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
+        googleMap.animateCamera(cameraUpdate);
+        locationManager.removeUpdates(this);
+    }
 
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
 }
