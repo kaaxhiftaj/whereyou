@@ -121,7 +121,7 @@ public class HomeFragment extends Fragment {
                     CameraPosition cameraPosition = new CameraPosition.Builder().target(sydney).zoom(12).build();
                     googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-
+                    
                 }
             });
 
