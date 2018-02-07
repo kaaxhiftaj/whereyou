@@ -89,7 +89,7 @@ public class MapFragment extends Fragment implements
         //String to display current latitude and longitude
         String msg = latitude + ", "+longitude;
 
-        //Creating a LatLng Object to store Coordinates
+        //Creating a latLng Object to store Coordinates
         LatLng latLng = new LatLng(latitude, longitude);
 
         //Adding marker to map

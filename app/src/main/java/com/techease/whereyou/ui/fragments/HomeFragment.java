@@ -38,16 +38,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.techease.whereyou.Models.ReviewLocation;
+import com.techease.whereyou.Models.latLng;
 import com.techease.whereyou.R;
 import com.techease.whereyou.utils.InternetUtils;
-
-import org.w3c.dom.Comment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,16 +73,17 @@ public class HomeFragment extends Fragment implements LocationListener {
     private GoogleMap googleMap;
     Unbinder unbinder;
     LatLng latLng;
-    List<ReviewLocation> reviewLocationsList=new ArrayList<>();
+    List<ReviewLocation> reviewLocationsList = new ArrayList<>();
     private LocationManager locationManager;
     private static final long MIN_TIME = 400;
     private static final float MIN_DISTANCE = 1000;
     String Address;
     float ratingBarValue;
     FirebaseAuth mAuth;
-    HashMap<String,ReviewLocation> hashMap;
+    HashMap<String, ReviewLocation> hashMap;
     private DatabaseReference mFirebaseDatabase;
     CameraPosition cameraPosition;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -92,77 +92,90 @@ public class HomeFragment extends Fragment implements LocationListener {
         View v = inflater.inflate(R.layout.fragment_home, container, false);
         unbinder = ButterKnife.bind(this, v);
         //Declaration
-        hashMap=new HashMap<>();
-        mAuth=FirebaseAuth.getInstance();
-        mFirebaseDatabase = FirebaseDatabase.getInstance().getReference();
-        ChildEventListener childEventListener = new ChildEventListener() {
+        hashMap = new HashMap<>();
+        mAuth = FirebaseAuth.getInstance();
+        mFirebaseDatabase = FirebaseDatabase.getInstance().getReference().child("ReviewLocation");
+        mFirebaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-                Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    ReviewLocation reviewLocation = dataSnapshot1.getValue(ReviewLocation.class);
+                    Log.d("zma abc", String.valueOf(reviewLocation.getLatLng().getLatitude()));
 
-                // A new comment has been added, add it to the displayed list
-                ReviewLocation reviewLocation = dataSnapshot.getValue(ReviewLocation.class);
-                Log.d("zmaReview",reviewLocation.toString());
-                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                    Log.d("zmaLoc",userSnapshot.toString());
+                }
 
-                    ReviewLocation mReviewLocation = userSnapshot.child("ReviewLocation").getValue(ReviewLocation.class);
-                    reviewLocationsList.add(mReviewLocation);
-                    
-
-                    }
-                showMarker(reviewLocationsList);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-                Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
-
-                // A comment has changed, use the key to determine if we are displaying this
-                // comment and if so displayed the changed comment.
-                Comment newComment = dataSnapshot.getValue(Comment.class);
-                String commentKey = dataSnapshot.getKey();
-
-                // ...
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
-
-                // A comment has changed, use the key to determine if we are displaying this
-                // comment and if so remove it.
-                String commentKey = dataSnapshot.getKey();
-
-                // ...
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
-                Log.d(TAG, "onChildMoved:" + dataSnapshot.getKey());
-
-                // A comment has changed position, use the key to determine if we are
-                // displaying this comment and if so move it.
-                Comment movedComment = dataSnapshot.getValue(Comment.class);
-                String commentKey = dataSnapshot.getKey();
-
-                // ...
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
-                Log.w(TAG, "postComments:onCancelled", databaseError.toException());
-                Toast.makeText(getActivity(), "Failed to load comments.",
-                        Toast.LENGTH_SHORT).show();
+
             }
-        };
-        mFirebaseDatabase.addChildEventListener(childEventListener);
+        });
+
+
+//        ChildEventListener childEventListener = new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+//                Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
+//
+//                // A new comment has been added, add it to the displayed list
+//                ReviewLocation reviewLocation = dataSnapshot.getValue(ReviewLocation.class);
+//                Log.d("zmaReview", reviewLocation.toString());
+//                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+//                    Log.d("zmaLoc", userSnapshot.toString());
+//
+//                    ReviewLocation mReviewLocation = userSnapshot.child("ReviewLocation").getValue(ReviewLocation.class);
+//                    reviewLocationsList.add(mReviewLocation);
+//
+//
+//                }
+//                showMarker(reviewLocationsList);
+//            }
+//
+//            @Override
+//            public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
+//                Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
+//
+//                // A comment has changed, use the key to determine if we are displaying this
+//                // comment and if so displayed the changed comment.
+//                Comment newComment = dataSnapshot.getValue(Comment.class);
+//                String commentKey = dataSnapshot.getKey();
+//
+//                // ...
+//            }
+//
+//            @Override
+//            public void onChildRemoved(DataSnapshot dataSnapshot) {
+//                Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
+//
+//                // A comment has changed, use the key to determine if we are displaying this
+//                // comment and if so remove it.
+//                String commentKey = dataSnapshot.getKey();
+//
+//                // ...
+//            }
+//
+//            @Override
+//            public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
+//                Log.d(TAG, "onChildMoved:" + dataSnapshot.getKey());
+//
+//                // A comment has changed position, use the key to determine if we are
+//                // displaying this comment and if so move it.
+//                Comment movedComment = dataSnapshot.getValue(Comment.class);
+//                String commentKey = dataSnapshot.getKey();
+//
+//                // ...
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError databaseError) {
+//                Log.w(TAG, "postComments:onCancelled", databaseError.toException());
+//                Toast.makeText(getActivity(), "Failed to load comments.",
+//                        Toast.LENGTH_SHORT).show();
+//            }
+//        };
+//        mFirebaseDatabase.addChildEventListener(childEventListener);
         // get reference to 'users' node
-
-
-
-
-
 
 
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -184,9 +197,9 @@ public class HomeFragment extends Fragment implements LocationListener {
             public void onPlaceSelected(Place place) {
                 // TODO: Get info about the selected place.
                 Log.i("Place: ", place.getAddress().toString());
-                Address=String.valueOf(place.getAddress());
-                latLng=place.getLatLng();
-                MyMethod(googleMap,latLng);
+                Address = String.valueOf(place.getAddress());
+                latLng = place.getLatLng();
+                MyMethod(googleMap, latLng);
                 //  strLocation = place.getAddress().toString();
                 bolFlag = true;
             }
@@ -199,10 +212,7 @@ public class HomeFragment extends Fragment implements LocationListener {
         });
 
 
-
-
-        if(InternetUtils.isNetworkConnected(getActivity()))
-        {
+        if (InternetUtils.isNetworkConnected(getActivity())) {
             mMapView.onCreate(savedInstanceState);
             mMapView.onResume();
 
@@ -228,15 +238,12 @@ public class HomeFragment extends Fragment implements LocationListener {
                 }
             });
 
-        }
-        else
-        {
-            Toast.makeText(getActivity(),"No Internet Connection",Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_SHORT).show();
         }
 
-        return  v ;
+        return v;
     }
-
 
 
     @Override
@@ -270,9 +277,9 @@ public class HomeFragment extends Fragment implements LocationListener {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(getActivity(), data);
                 Log.i(TAG, "Place: " + place.getName());
-              //  strLocation = place.getAddress().toString();
+                //  strLocation = place.getAddress().toString();
                 bolFlag = true;
-                MyMethod(googleMap,place.getLatLng());
+                MyMethod(googleMap, place.getLatLng());
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(getActivity(), data);
                 // TODO: Handle the error.
@@ -283,10 +290,11 @@ public class HomeFragment extends Fragment implements LocationListener {
             }
         }
     }
-    public void showMarker(List<ReviewLocation> reviewLocation) {
-        Log.d("zmaData",reviewLocation.toString());
 
-//        LatLng latLng = reviewLocation.getLatLng();
+    public void showMarker(List<ReviewLocation> reviewLocation) {
+        Log.d("zmaData", reviewLocation.toString());
+
+//        latLng latLng = reviewLocation.getLatLng();
 //        Log.d("zmaLatlng",latLng.toString());
 //        Marker m;
 //        m = googleMap.addMarker(new MarkerOptions().position(latLng).title(reviewLocation.getLocationName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.map_location)));
@@ -295,10 +303,11 @@ public class HomeFragment extends Fragment implements LocationListener {
 //        cameraPosition = new CameraPosition.Builder().target(latLng).zoom(12).build();
 //        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
+
     private void MyMethod(GoogleMap googleMap, final LatLng latLng) {
-        googleMap=googleMap;
+        googleMap = googleMap;
         LatLng location = latLng;
-        Log.d("zma loc",String.valueOf(location));
+        Log.d("zma loc", String.valueOf(location));
         googleMap.addMarker(new MarkerOptions().position(location).title(Address));
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(location));
         googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
@@ -306,20 +315,23 @@ public class HomeFragment extends Fragment implements LocationListener {
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-               // AlertsUtils.showMarkerDialog(getActivity(),marker.getTitle());
-                showMarkerDialog(getActivity(),marker.getTitle(),latLng);
+                // AlertsUtils.showMarkerDialog(getActivity(),marker.getTitle());
+                showMarkerDialog(getActivity(), marker.getTitle(), latLng);
                 return false;
             }
 
         });
 
     }
+
     @Override
     public void onLocationChanged(Location location) {
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
-        googleMap.animateCamera(cameraUpdate);
-        locationManager.removeUpdates(this);
+        if (googleMap != null) {
+            googleMap.animateCamera(cameraUpdate);
+            locationManager.removeUpdates(this);
+        }
     }
 
     @Override
@@ -353,7 +365,7 @@ public class HomeFragment extends Fragment implements LocationListener {
         btnReview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showReviewDialog(activity, message,latLng);
+                showReviewDialog(activity, message, latLng);
                 alertDialog.dismiss();
             }
         });
@@ -368,7 +380,7 @@ public class HomeFragment extends Fragment implements LocationListener {
     }
 
 
-    public static void showReviewDialog(final Activity activity, final String message, final LatLng latLng) {
+    public static void showReviewDialog(final Activity activity, final String message, final LatLng latLngObject) {
 
         final String strTextBox;
         final float value;
@@ -382,12 +394,12 @@ public class HomeFragment extends Fragment implements LocationListener {
         tvTown.setText(message);
 
         Button btnReview = dialogView.findViewById(R.id.btnSubmitCustomDialogReview);
-        final RatingBar ratingBar=(RatingBar)dialogView.findViewById(R.id.ratingbar);
-        final EditText editText=(EditText)dialogView.findViewById(R.id.etTextBox);
-        strTextBox=editText.getText().toString();
+        final RatingBar ratingBar = (RatingBar) dialogView.findViewById(R.id.ratingbar);
+        final EditText editText = (EditText) dialogView.findViewById(R.id.etTextBox);
+        strTextBox = editText.getText().toString();
         ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
-            public void onRatingChanged(RatingBar ratingBar,final float v, boolean b) {
+            public void onRatingChanged(RatingBar ratingBar, final float v, boolean b) {
                 ratingBar.setRating(v);
 
             }
@@ -397,8 +409,9 @@ public class HomeFragment extends Fragment implements LocationListener {
             public void onClick(View view) {
                 FirebaseAuth firebaseAuth;
                 firebaseAuth = FirebaseAuth.getInstance();
-                String Uid=   firebaseAuth.getUid();
-                ReviewLocation reviewLocation=new ReviewLocation(Uid,message,editText.getText().toString(), latLng,ratingBar.getRating());
+                String Uid = firebaseAuth.getUid();
+                com.techease.whereyou.Models.latLng latLng = new latLng(latLngObject.latitude,latLngObject.longitude);
+                ReviewLocation reviewLocation = new ReviewLocation(Uid, message, editText.getText().toString(), latLng, ratingBar.getRating());
                 DatabaseReference database = FirebaseDatabase.getInstance().getReference();
                 database.child("ReviewLocation").child(message).setValue(reviewLocation);
             }
