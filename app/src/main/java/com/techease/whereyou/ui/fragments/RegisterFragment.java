@@ -21,8 +21,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.techease.whereyou.R;
 import com.techease.whereyou.ui.activities.MainActivity;
+import com.techease.whereyou.ui.models.ReviewLocation;
+import com.techease.whereyou.ui.models.User;
 import com.techease.whereyou.utils.AlertsUtils;
 import com.techease.whereyou.utils.Configuration;
 
@@ -56,7 +60,7 @@ public class RegisterFragment extends Fragment {
 
 
     private FirebaseAuth mAuth;
-    String email , password;
+    String email , password , name , mobile;
     android.support.v7.app.AlertDialog alertDialog;
     Unbinder unbinder ;
     SharedPreferences sharedPreferences;
@@ -101,6 +105,8 @@ public class RegisterFragment extends Fragment {
                 alertDialog.show();
                 email= signup_email.getText().toString();
                 password = signup_password.getText().toString();
+                name = signup_fullname.getText().toString();
+                mobile = signup_phone.getText().toString();
                 Signup(email,password);
             }
         });
@@ -110,7 +116,7 @@ public class RegisterFragment extends Fragment {
         return v ;
     }
 
-    public void Signup(String email, String password){
+    public void Signup(final String email, String password){
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
@@ -122,6 +128,13 @@ public class RegisterFragment extends Fragment {
                             editor.putString("user_id", userid).commit();
                             if (alertDialog != null)
                                 alertDialog.dismiss();
+
+                            FirebaseAuth firebaseAuth;
+                            firebaseAuth = FirebaseAuth.getInstance();
+                            String Uid = firebaseAuth.getUid();
+                            User use = new User(Uid, name, email, mobile);
+                            DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+                            database.child("user").child(Uid).setValue(use);
                             startActivity(new Intent(getActivity(), MainActivity.class));
 
                         } else {

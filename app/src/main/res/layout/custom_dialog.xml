@@ -39,20 +39,24 @@
         android:paddingRight="5sp"
         android:gravity="center"
         android:orientation="horizontal">
+
     <Button
         android:id="@+id/btnReviewCustomDialog"
         android:layout_width="150sp"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
+        android:textSize="15dp"
         android:text="Review Location"
         android:background="@drawable/btnripple"
         android:textAlignment="center"
         />
+
         <Button
             android:id="@+id/btnExistingCustomDialog"
             android:layout_width="150sp"
             android:layout_marginLeft="10sp"
             android:background="@drawable/btnripple"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
+            android:textSize="15dp"
             android:text="See existing"
             android:textAlignment="center"
             />

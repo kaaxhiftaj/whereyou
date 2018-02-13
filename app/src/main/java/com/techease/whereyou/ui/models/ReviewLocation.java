@@ -1,4 +1,4 @@
-package com.techease.whereyou.Models;
+package com.techease.whereyou.ui.models;
 
 /**
  * Created by Adam Noor on 02-Feb-18.
@@ -7,18 +7,19 @@ package com.techease.whereyou.Models;
 public class ReviewLocation {
     private String userId, locationName, comment;
     private double ratValue;
-    private latLng latLng;
+    double lat, lon;
 
 
     public ReviewLocation() {
 
     }
 
-    public ReviewLocation(String userId, String locationName, String comment, latLng latLng, float ratValue) {
+    public ReviewLocation(String userId, String locationName, String comment, double lat, double lon, float ratValue) {
         this.userId = userId;
         this.comment = comment;
         this.locationName = locationName;
-        this.latLng = latLng;
+        this.lat = lat;
+        this.lon = lon ;
         this.ratValue = ratValue;
 
     }
@@ -56,11 +57,19 @@ public class ReviewLocation {
         this.ratValue = ratValue;
     }
 
-    public com.techease.whereyou.Models.latLng getLatLng() {
-        return latLng;
+    public double getLat() {
+        return lat;
     }
 
-    public void setLatLng(com.techease.whereyou.Models.latLng latLng) {
-        this.latLng = latLng;
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLon() {
+        return lon;
+    }
+
+    public void setLon(double lon) {
+        this.lon = lon;
     }
 }

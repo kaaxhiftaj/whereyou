@@ -1,0 +1,72 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#f3f3f3"
+            android:orientation="horizontal"
+            android:layout_marginTop="20dp">
+
+            <ImageView
+                android:id="@+id/group_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:scaleType="fitXY"
+                android:layout_marginLeft="5dp"
+                android:src="@drawable/image"/>
+
+            <TextView
+                android:id="@+id/review_location_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Location Name"
+                android:layout_toRightOf="@+id/group_profile"
+                android:textStyle="bold"
+                android:textColor="#000"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="20dp"
+                android:textSize="16dp"/>
+
+            <me.zhanghai.android.materialratingbar.MaterialRatingBar
+                android:id="@+id/ratting_bar"
+                android:layout_width="100dp"
+                android:layout_height="20dp"
+
+                android:layout_below="@+id/review_location_name"
+                android:layout_toRightOf="@+id/group_profile"
+                android:layout_marginLeft="20dp"
+                />
+
+            <TextView
+                android:id="@+id/reviews_comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="comments"
+                android:layout_below="@+id/ratting_bar"
+                android:layout_marginLeft="90dp"
+                android:layout_marginTop="20dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/reviews_comment"
+                android:text="1 january 2018 at 12:30 pm"
+                android:foregroundGravity="right"
+                android:gravity="right"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="15dp"/>
+
+        </RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

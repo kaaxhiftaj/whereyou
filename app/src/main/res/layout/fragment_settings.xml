@@ -4,5 +4,140 @@
     android:layout_height="match_parent"
     tools:context="com.techease.whereyou.ui.fragments.SettingsFragment">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="#eee"
+            >
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:orientation="horizontal"
+                android:background="#fff"
+                android:layout_alignParentBottom = "true"
+                >
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Setting"
+                    android:textStyle="bold"
+                    android:textSize="24sp"
+                    android:textColor="#000"
+                    android:layout_gravity="bottom"
+                    android:layout_marginLeft="10dp"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:background="#fff">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/image"
+                    android:scaleType="center"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"/>
 
-</FrameLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#000"
+                    android:id="@+id/settingsName"
+                    android:layout_gravity="center"
+                    android:text="Abdullah Khan"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_marginLeft="10dp"/>
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="10dp"
+                android:background="#fff">
+                <TextView
+                    android:id="@+id/edit_profile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Edit Profile"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:textSize="18sp"/>
+                <View
+                    android:layout_width="300dp"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_gravity="center"
+                    android:background="#eee"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Edit Location"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:textSize="18dp"/>
+                <View
+                    android:layout_width="300dp"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_gravity="center"
+                    android:background="#eee"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Notification Setting"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:textSize="18sp"/>
+                <View
+                    android:layout_width="300dp"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_gravity="center"
+                    android:background="#eee"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="App Setting"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:textSize="18sp"/>
+                <View
+                    android:layout_width="300dp"
+                    android:layout_height="2dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_gravity="center"
+                    android:background="#eee"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:background="#fff"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="#fff"
+                    android:text="Logout"
+                    android:textSize="18sp"
+                    android:layout_marginLeft="25dp"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#fff"
+                android:layout_marginTop="10dp"></LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+
