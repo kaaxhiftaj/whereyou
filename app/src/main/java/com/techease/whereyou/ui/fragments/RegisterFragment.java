@@ -1,12 +1,11 @@
 package com.techease.whereyou.ui.fragments;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,18 +13,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
-import com.facebook.CallbackManager;
-import com.facebook.login.widget.LoginButton;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.techease.whereyou.R;
 import com.techease.whereyou.ui.activities.MainActivity;
-import com.techease.whereyou.ui.models.ReviewLocation;
 import com.techease.whereyou.ui.models.User;
 import com.techease.whereyou.utils.AlertsUtils;
 import com.techease.whereyou.utils.Configuration;
@@ -35,8 +31,6 @@ import belka.us.androidtoggleswitch.widgets.ToggleSwitch;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-
-import static android.content.ContentValues.TAG;
 
 public class RegisterFragment extends Fragment {
 
@@ -60,6 +54,7 @@ public class RegisterFragment extends Fragment {
 
 
     private FirebaseAuth mAuth;
+    DatabaseReference mDatabase;
     String email , password , name , mobile;
     android.support.v7.app.AlertDialog alertDialog;
     Unbinder unbinder ;
@@ -74,7 +69,7 @@ public class RegisterFragment extends Fragment {
         View v =  inflater.inflate(R.layout.fragment_register, container, false);
         unbinder = ButterKnife.bind(this, v );
         mAuth = FirebaseAuth.getInstance();
-
+        mDatabase= FirebaseDatabase.getInstance().getReference().child("user");
         sharedPreferences = getActivity().getSharedPreferences(Configuration.MY_PREF, Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
@@ -123,8 +118,7 @@ public class RegisterFragment extends Fragment {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            String userid = mAuth.getUid();
+                            String userid   = mAuth.getCurrentUser().getUid();
                             editor.putString("user_id", userid).commit();
                             if (alertDialog != null)
                                 alertDialog.dismiss();
@@ -133,8 +127,8 @@ public class RegisterFragment extends Fragment {
                             firebaseAuth = FirebaseAuth.getInstance();
                             String Uid = firebaseAuth.getUid();
                             User use = new User(Uid, name, email, mobile);
-                            DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-                            database.child("user").child(Uid).setValue(use);
+                            DatabaseReference current_user_db=mDatabase.child(userid);
+                            current_user_db.child("user").child(Uid).setValue(use);
                             startActivity(new Intent(getActivity(), MainActivity.class));
 
                         } else {

@@ -1,13 +1,11 @@
 package com.techease.whereyou.ui.fragments;
 
+import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +18,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.techease.whereyou.R;
 import com.techease.whereyou.ui.activities.MainActivity;
 import com.techease.whereyou.utils.AlertsUtils;
@@ -31,7 +34,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class LoginFragment extends Fragment {
+public class LoginFragment extends Fragment{
 
 
     @BindView(R.id.et_signin_email)
@@ -45,11 +48,19 @@ public class LoginFragment extends Fragment {
 
     Unbinder unbinder ;
     private FirebaseAuth mAuth;
+    DatabaseReference mDatabase;
     String email , password;
 
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
     android.support.v7.app.AlertDialog alertDialog;
+
+    public static LoginFragment newInstance() {
+        Bundle args = new Bundle();
+        LoginFragment fragment = new LoginFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,6 +69,7 @@ public class LoginFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_login, container, false);
         unbinder = ButterKnife.bind(this, v );
         mAuth = FirebaseAuth.getInstance();
+        mDatabase= FirebaseDatabase.getInstance().getReference().child("user");
         sharedPreferences = getActivity().getSharedPreferences(Configuration.MY_PREF, Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
@@ -103,12 +115,8 @@ public class LoginFragment extends Fragment {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            String userid = mAuth.getUid();
-                            editor.putString("user_id", userid).commit();
-                            if (alertDialog != null)
-                                alertDialog.dismiss();
-                            startActivity(new Intent(getActivity(), MainActivity.class));
+                            checkUserExist();
+
                         } else {
 
                             if (alertDialog != null)
@@ -122,4 +130,30 @@ public class LoginFragment extends Fragment {
                 });
 
     }
+
+    private void checkUserExist() {
+        final String userId=mAuth.getCurrentUser().getUid();
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChild(userId))
+                {
+
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    String userid = mAuth.getUid();
+                    editor.putString("user_id", userid).commit();
+                    if (alertDialog != null)
+                        alertDialog.dismiss();
+                    startActivity(new Intent(getActivity(), MainActivity.class));
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
 }

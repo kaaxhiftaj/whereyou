@@ -1,0 +1,38 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    tools:context="com.techease.whereyou.ui.fragments.ChatFragment">
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/messageRec"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/linearLayout">
+    </android.support.v7.widget.RecyclerView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/linearLayout"
+        android:orientation="horizontal">
+        <EditText
+            android:layout_width="0sp"
+            android:layout_weight="1"
+            android:hint="Type new message"
+            android:layout_height="wrap_content"
+            android:id="@+id/editMessageE"
+            />
+
+        <ImageView
+            android:layout_width="0sp"
+            android:layout_weight="0.1"
+            android:layout_height="30sp"
+            android:layout_marginTop="10sp"
+            android:backgroundTint="#9E9E9E"
+            android:background="@drawable/ic_menu_send"
+            android:id="@+id/btnSend"
+            />
+    </LinearLayout>
+
+</RelativeLayout>
