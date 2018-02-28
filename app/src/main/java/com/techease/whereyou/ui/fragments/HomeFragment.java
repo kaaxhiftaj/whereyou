@@ -237,8 +237,16 @@ public class HomeFragment extends Fragment implements LocationListener {
 
         LatLng latLng = new LatLng(reviewLocation.getLat(), reviewLocation.getLon());
         Log.d("zmaLatlng",latLng.toString());
-        Marker m;
-        m = googleMap.addMarker(new MarkerOptions().position(latLng).title(reviewLocation.getLocationName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.map_location)));
+        if (latLng!=null)
+        {
+            Marker m;
+            m = googleMap.addMarker(new MarkerOptions().position(latLng).title(reviewLocation.getLocationName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.map_location)));
+        }
+        else
+        {
+            Toast.makeText(getActivity(), "You have not searched places", Toast.LENGTH_SHORT).show();
+        }
+
 
         // For zooming automatically to the location of the marker
 //        cameraPosition = new CameraPosition.Builder().target(latLng).zoom(12).build();

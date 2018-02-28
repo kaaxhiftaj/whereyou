@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -42,11 +43,14 @@ public class ChatFragment extends Fragment {
     private FirebaseAuth.AuthStateListener mAuthListener;
     EditText editMessage;
     ImageView btnSend;
+    String userName,userId;
+    Message messageObject;
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.fragment_chat, container, false);
 
+        messageObject=new Message();
         database=FirebaseDatabase.getInstance();
         mDatabaseUser=database.getReference("user");
         messageRef=database.getReference("Messages");
@@ -100,7 +104,22 @@ public class ChatFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mCurrentUser=mAuth.getCurrentUser();
-                mDatabaseUser=FirebaseDatabase.getInstance().getReference().child("user").child(mCurrentUser.getUid());
+                mDatabaseUser.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                            Message message=dataSnapshot1.getValue(Message.class);
+                            userName=String.valueOf(dataSnapshot1.child("name").getValue());
+                            userId=String.valueOf(dataSnapshot1.child("userId").getValue());
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
                 final String messageValue=editMessage.getText().toString().trim();
                 if (!TextUtils.isEmpty(messageValue))
                 {
@@ -108,13 +127,17 @@ public class ChatFragment extends Fragment {
                     mDatabaseUser.addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
+                            newPost.child("senderId").setValue(userId);
                             newPost.child("content").setValue(messageValue);
-                            newPost.child("user").child("userId").setValue(dataSnapshot.child("name").getValue()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            newPost.child("senderName").setValue(userName);
+                            newPost.child("user").setValue(dataSnapshot.child("userId").child("name").getValue()).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
 
+
                                 }
                             });
+
                         }
 
                         @Override

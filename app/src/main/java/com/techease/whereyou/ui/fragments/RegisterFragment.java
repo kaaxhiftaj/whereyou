@@ -101,6 +101,7 @@ public class RegisterFragment extends Fragment {
                 email= signup_email.getText().toString();
                 password = signup_password.getText().toString();
                 name = signup_fullname.getText().toString();
+                editor.putString("name",name).commit();
                 mobile = signup_phone.getText().toString();
                 Signup(email,password);
             }
@@ -128,7 +129,7 @@ public class RegisterFragment extends Fragment {
                             String Uid = firebaseAuth.getUid();
                             User use = new User(Uid, name, email, mobile);
                             DatabaseReference current_user_db=mDatabase.child(userid);
-                            current_user_db.child("user").child(Uid).setValue(use);
+                            current_user_db.setValue(use);
                             startActivity(new Intent(getActivity(), MainActivity.class));
 
                         } else {
