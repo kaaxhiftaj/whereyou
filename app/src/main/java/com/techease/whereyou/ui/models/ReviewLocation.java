@@ -10,6 +10,7 @@ public class ReviewLocation {
     double lat, lon;
 
 
+
     public ReviewLocation() {
 
     }
@@ -21,6 +22,7 @@ public class ReviewLocation {
         this.lat = lat;
         this.lon = lon ;
         this.ratValue = ratValue;
+
 
     }
 

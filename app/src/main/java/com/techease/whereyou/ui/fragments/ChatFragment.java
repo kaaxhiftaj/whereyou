@@ -104,39 +104,24 @@ public class ChatFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 mCurrentUser=mAuth.getCurrentUser();
-                mDatabaseUser.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                            Message message=dataSnapshot1.getValue(Message.class);
-                            userName=String.valueOf(dataSnapshot1.child("name").getValue());
-                            userId=String.valueOf(dataSnapshot1.child("userId").getValue());
-                        }
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-                final String messageValue=editMessage.getText().toString().trim();
-                if (!TextUtils.isEmpty(messageValue))
+                mDatabaseUser=FirebaseDatabase.getInstance().getReference().child("user").child(mCurrentUser.getUid());
+                final String message=editMessage.getText().toString().trim();
+                if (!TextUtils.isEmpty(message))
                 {
                     final DatabaseReference newPost=databaseReference.push();
-                    mDatabaseUser.addValueEventListener(new ValueEventListener() {
+                    mDatabaseUser.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            newPost.child("senderId").setValue(userId);
-                            newPost.child("content").setValue(messageValue);
-                            newPost.child("senderName").setValue(userName);
-                            newPost.child("user").setValue(dataSnapshot.child("userId").child("name").getValue()).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
+                            for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                //Message message=dataSnapshot1.getValue(Message.class);
+                                newPost.child("content").setValue(message);
+                                newPost.child("username").setValue(dataSnapshot.child("name").getValue()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
 
-
-                                }
-                            });
+                                    }
+                                });
+                            }
 
                         }
 
@@ -148,8 +133,38 @@ public class ChatFragment extends Fragment {
                     mMessageList.scrollToPosition(mMessageList.getAdapter().getItemCount());
                     editMessage.setText("");
                     editMessage.setHint("Type new message");
-
                 }
+
+//                final String messageValue=editMessage.getText().toString().trim();
+//                if (!TextUtils.isEmpty(messageValue))
+//                {
+//                    final DatabaseReference newPost=databaseReference.push();
+//                    mDatabaseUser.addValueEventListener(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(DataSnapshot dataSnapshot) {
+//                            newPost.child("senderId").setValue(userId);
+//                            newPost.child("content").setValue(messageValue);
+//                            newPost.child("senderName").setValue(userName);
+//                            newPost.child("user").setValue(dataSnapshot.child("userId").child("name").getValue()).addOnCompleteListener(new OnCompleteListener<Void>() {
+//                                @Override
+//                                public void onComplete(@NonNull Task<Void> task) {
+//
+//
+//                                }
+//                            });
+//
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(DatabaseError databaseError) {
+//
+//                        }
+//                    });
+//                    mMessageList.scrollToPosition(mMessageList.getAdapter().getItemCount());
+//                    editMessage.setText("");
+//                    editMessage.setHint("Type new message");
+//
+//                }
             }
         });
 

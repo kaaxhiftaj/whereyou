@@ -39,6 +39,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -83,6 +84,7 @@ public class HomeFragment extends Fragment implements LocationListener {
     FirebaseAuth mAuth;
     private DatabaseReference mFirebaseDatabase;
     CameraPosition cameraPosition;
+    FirebaseUser firebaseUser;
     android.support.v7.app.AlertDialog alertDialog;
 
     @Override
@@ -100,11 +102,13 @@ public class HomeFragment extends Fragment implements LocationListener {
 
         mAuth = FirebaseAuth.getInstance();
         mFirebaseDatabase = FirebaseDatabase.getInstance().getReference().child("ReviewLocation");
+        firebaseUser=mAuth.getCurrentUser();
         mFirebaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                     ReviewLocation reviewLocation = dataSnapshot1.getValue(ReviewLocation.class);
+
                     if (alertDialog != null)
                         alertDialog.dismiss();
                     showMarker(reviewLocation);
