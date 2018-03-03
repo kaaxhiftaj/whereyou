@@ -7,6 +7,17 @@ package com.techease.whereyou.ui.models;
 public class Message {
     private String content;
     private String username;
+    private String UserId;
+
+    public String getUserId() {
+        return UserId;
+    }
+
+    public void setUserId(String userId) {
+        UserId = userId;
+    }
+
+
 
 
     public void setUsername(String username) {

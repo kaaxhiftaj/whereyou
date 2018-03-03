@@ -13,9 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.load.engine.Initializable;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -39,16 +41,20 @@ public class ChatFragment extends Fragment {
     DatabaseReference messageRef;
     FirebaseDatabase database;
     DatabaseReference databaseReference;
-    private FirebaseAuth mAuth;
+    private static FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     EditText editMessage;
     ImageView btnSend;
-    String userName,userId;
     Message messageObject;
+    static String userId;
+
+    private static final int VIEW_TYPE_MESSAGE_SENT = 1;
+    private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.fragment_chat, container, false);
+
 
         messageObject=new Message();
         database=FirebaseDatabase.getInstance();
@@ -113,7 +119,7 @@ public class ChatFragment extends Fragment {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                                //Message message=dataSnapshot1.getValue(Message.class);
+                                newPost.child("userId").setValue(dataSnapshot.getKey());
                                 newPost.child("content").setValue(message);
                                 newPost.child("username").setValue(dataSnapshot.child("name").getValue()).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
@@ -135,36 +141,6 @@ public class ChatFragment extends Fragment {
                     editMessage.setHint("Type new message");
                 }
 
-//                final String messageValue=editMessage.getText().toString().trim();
-//                if (!TextUtils.isEmpty(messageValue))
-//                {
-//                    final DatabaseReference newPost=databaseReference.push();
-//                    mDatabaseUser.addValueEventListener(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(DataSnapshot dataSnapshot) {
-//                            newPost.child("senderId").setValue(userId);
-//                            newPost.child("content").setValue(messageValue);
-//                            newPost.child("senderName").setValue(userName);
-//                            newPost.child("user").setValue(dataSnapshot.child("userId").child("name").getValue()).addOnCompleteListener(new OnCompleteListener<Void>() {
-//                                @Override
-//                                public void onComplete(@NonNull Task<Void> task) {
-//
-//
-//                                }
-//                            });
-//
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(DatabaseError databaseError) {
-//
-//                        }
-//                    });
-//                    mMessageList.scrollToPosition(mMessageList.getAdapter().getItemCount());
-//                    editMessage.setText("");
-//                    editMessage.setHint("Type new message");
-//
-//                }
             }
         });
 
@@ -185,6 +161,9 @@ public class ChatFragment extends Fragment {
             viewHolder.setContent(model.getContent());
             viewHolder.setUserName(model.getUsername());
             viewHolder.setTime(time);
+             userId=model.getUserId();
+
+
         }
         };
         mMessageList.setAdapter(FBRA);
@@ -192,25 +171,54 @@ public class ChatFragment extends Fragment {
     public  static class MessageViewHolder extends RecyclerView.ViewHolder{
 
         View mView;
-
+        LinearLayout leftView;
+        LinearLayout rightView;
         public MessageViewHolder(View itemView) {
             super(itemView);
             mView=itemView;
+
+            leftView=(LinearLayout)itemView.findViewById(R.id.leftView);
+            rightView=(LinearLayout)itemView.findViewById(R.id.rightView);
         }
         public void setContent (String content)
         {
-            TextView textView=(TextView)itemView.findViewById(R.id.messageText);
-            textView.setText(content);
+
+            TextView leftMsg=(TextView)itemView.findViewById(R.id.messageText);
+            TextView rightMsg=(TextView)itemView.findViewById(R.id.messageText2);
+            if (userId==mAuth.getUid())
+            {
+                rightMsg.setText(content);
+                leftView.setVisibility(View.INVISIBLE);
+            }
+            else
+            {
+                rightView.setVisibility(View.INVISIBLE);
+                leftMsg.setText(content);
+            }
+
         }
         public void setUserName(String userName)
         {
-            TextView textView=(TextView)itemView.findViewById(R.id.usernameText);
-            textView.setText(userName);
+            TextView leftUser=(TextView)itemView.findViewById(R.id.usernameText);
+            TextView rightUser=(TextView)itemView.findViewById(R.id.usernameText);
+            if (userId==mAuth.getUid())
+            {
+                leftView.setVisibility(View.INVISIBLE);
+                rightUser.setText(userName);
+            }
+            else
+            {
+                rightView.setVisibility(View.INVISIBLE);
+                leftUser.setText(userName);
+            }
+
+
         }
         public void setTime(Time time)
         {
             TextView textViewtime=(TextView)itemView.findViewById(R.id.timeText);
             textViewtime.setText(String.valueOf(time));
         }
+
     }
 }
