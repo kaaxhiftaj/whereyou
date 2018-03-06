@@ -13,7 +13,6 @@ import android.widget.TextView;
 
 import com.techease.whereyou.R;
 import com.techease.whereyou.ui.fragments.ChatFragment;
-import com.techease.whereyou.ui.fragments.Chatting;
 import com.techease.whereyou.ui.models.GroupsModel;
 
 import java.util.List;
