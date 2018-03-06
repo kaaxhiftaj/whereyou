@@ -1,6 +1,7 @@
 package com.techease.whereyou.ui.fragments;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.load.engine.Initializable;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -35,8 +34,8 @@ import java.sql.Time;
 
 public class ChatFragment extends Fragment {
 
-    RecyclerView mMessageList;
-    private FirebaseUser mCurrentUser;
+    RecyclerView mRecyclerView;
+    private static FirebaseUser mCurrentUser;
     DatabaseReference mDatabaseUser;
     DatabaseReference messageRef;
     FirebaseDatabase database;
@@ -46,30 +45,28 @@ public class ChatFragment extends Fragment {
     EditText editMessage;
     ImageView btnSend;
     Message messageObject;
+    static boolean sender;
     static String userId;
-
-    private static final int VIEW_TYPE_MESSAGE_SENT = 1;
-    private static final int VIEW_TYPE_MESSAGE_RECEIVED = 2;
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.fragment_chat, container, false);
-
 
         messageObject=new Message();
         database=FirebaseDatabase.getInstance();
         mDatabaseUser=database.getReference("user");
         messageRef=database.getReference("Messages");
         databaseReference= FirebaseDatabase.getInstance().getReference().child("Messages");
+        databaseReference.keepSynced(true);
         btnSend=(ImageView)view.findViewById(R.id.btnSend);
         editMessage=(EditText)view.findViewById(R.id.editMessageE);
-        mMessageList=(RecyclerView)view.findViewById(R.id.messageRec);
-        mMessageList.setHasFixedSize(true);
+        mRecyclerView = view.findViewById(R.id.messageRec);
+        mRecyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager=new LinearLayoutManager(getActivity());
         linearLayoutManager.setStackFromEnd(true);
-        mMessageList.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
         mAuth=FirebaseAuth.getInstance();
-
+        mCurrentUser=mAuth.getCurrentUser();
 
         editMessage.addTextChangedListener(new TextWatcher() {
             @Override
@@ -121,12 +118,7 @@ public class ChatFragment extends Fragment {
                             for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                                 newPost.child("userId").setValue(dataSnapshot.getKey());
                                 newPost.child("content").setValue(message);
-                                newPost.child("username").setValue(dataSnapshot.child("name").getValue()).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-
-                                    }
-                                });
+                                newPost.child("username").setValue(dataSnapshot.child("name").getValue());
                             }
 
                         }
@@ -136,7 +128,7 @@ public class ChatFragment extends Fragment {
 
                         }
                     });
-                    mMessageList.scrollToPosition(mMessageList.getAdapter().getItemCount());
+                    mRecyclerView.scrollToPosition(mRecyclerView.getAdapter().getItemCount());
                     editMessage.setText("");
                     editMessage.setHint("Type new message");
                 }
@@ -146,7 +138,6 @@ public class ChatFragment extends Fragment {
 
         return view;
     }
-
     @Override
     public void onStart() {
         final Time time=new Time(System.currentTimeMillis());
@@ -161,18 +152,27 @@ public class ChatFragment extends Fragment {
             viewHolder.setContent(model.getContent());
             viewHolder.setUserName(model.getUsername());
             viewHolder.setTime(time);
-             userId=model.getUserId();
+            userId = model.getUserId();
+            Log.d("zmaIdsss",userId+"  "+String.valueOf(mAuth.getUid()));
+            if (userId.equals(mAuth.getUid())){
+                sender = true;
+                Log.d("aya","aya");
+            }
+            else {
+                sender = false;
+            }
 
 
         }
         };
-        mMessageList.setAdapter(FBRA);
+        mRecyclerView.setAdapter(FBRA);
     }
     public  static class MessageViewHolder extends RecyclerView.ViewHolder{
 
         View mView;
         LinearLayout leftView;
         LinearLayout rightView;
+        Context context;
         public MessageViewHolder(View itemView) {
             super(itemView);
             mView=itemView;
@@ -180,20 +180,24 @@ public class ChatFragment extends Fragment {
             leftView=(LinearLayout)itemView.findViewById(R.id.leftView);
             rightView=(LinearLayout)itemView.findViewById(R.id.rightView);
         }
+
         public void setContent (String content)
         {
 
             TextView leftMsg=(TextView)itemView.findViewById(R.id.messageText);
             TextView rightMsg=(TextView)itemView.findViewById(R.id.messageText2);
-            if (userId==mAuth.getUid())
+            if (sender)
             {
+                rightView.setVisibility(View.VISIBLE);
+                 leftView.setVisibility(View.GONE);
                 rightMsg.setText(content);
-                leftView.setVisibility(View.INVISIBLE);
             }
             else
             {
-                rightView.setVisibility(View.INVISIBLE);
+                leftView.setVisibility(View.VISIBLE);
+                 rightView.setVisibility(View.GONE);
                 leftMsg.setText(content);
+                Log.d("zmaElse","else");
             }
 
         }
@@ -201,14 +205,17 @@ public class ChatFragment extends Fragment {
         {
             TextView leftUser=(TextView)itemView.findViewById(R.id.usernameText);
             TextView rightUser=(TextView)itemView.findViewById(R.id.usernameText);
-            if (userId==mAuth.getUid())
+            if (sender)
             {
-                leftView.setVisibility(View.INVISIBLE);
+                rightView.setVisibility(View.VISIBLE);
+                leftView.setVisibility(View.GONE);
                 rightUser.setText(userName);
+
             }
             else
             {
-                rightView.setVisibility(View.INVISIBLE);
+                leftView.setVisibility(View.VISIBLE);
+                rightView.setVisibility(View.GONE);
                 leftUser.setText(userName);
             }
 

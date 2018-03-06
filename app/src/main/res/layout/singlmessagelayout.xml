@@ -1,78 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    >
+    android:orientation="horizontal">
+
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10sp"
-        android:layout_gravity="left"
-        android:orientation="vertical"
         android:id="@+id/leftView"
-        android:background="@drawable/messageshape">
-    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Adam"
-        android:textColor="@color/colorPrimary"
-        android:textStyle="bold"
-        android:padding="5sp"
-        android:layout_marginLeft="5sp"
-        android:layout_marginRight="5sp"
-        android:id="@+id/usernameText"/>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="30sp"
-        android:id="@+id/messageText"
-        android:text="Hello"
-        android:layout_marginLeft="10sp"
-        android:layout_marginRight="15sp"
-        />
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="20sp"
-        android:id="@+id/timeText"
-        android:text="9:00 AM"
-        android:layout_marginLeft="10sp"
-        android:layout_marginRight="15sp"
-        />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10sp"
-        android:orientation="vertical"
-        android:layout_gravity="right"
-        android:id="@+id/rightView"
-        android:background="@drawable/messageshape">
+        android:layout_gravity="left"
+        android:layout_margin="2sp"
+        android:visibility="gone"
+        android:background="@drawable/messageshape"
+        android:orientation="vertical">
+
         <TextView
+            android:id="@+id/usernameText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Adam"
+            android:layout_margin="5sp"
             android:textColor="@color/colorPrimary"
-            android:textStyle="bold"
-            android:padding="5sp"
-            android:layout_marginLeft="5sp"
-            android:layout_marginRight="5sp"
-            android:id="@+id/usernameText2"/>
+            android:textStyle="bold" />
+
         <TextView
+            android:id="@+id/messageText"
             android:layout_width="wrap_content"
             android:layout_height="30sp"
-            android:id="@+id/messageText2"
-            android:text="Hello"
-            android:layout_marginLeft="10sp"
-            android:layout_marginRight="15sp"
+            android:layout_marginLeft="5sp"
             />
+
         <TextView
+            android:id="@+id/timeText"
             android:layout_width="wrap_content"
             android:layout_height="20sp"
-            android:id="@+id/timeText2"
-            android:text="9:00 AM"
             android:layout_marginLeft="10sp"
             android:layout_marginRight="15sp"
-            />
+            android:layout_marginBottom="5sp"
+            android:text="9:00 AM" />
     </LinearLayout>
-</LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/rightView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_margin="2sp"
+android:visibility="gone"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/messageshape"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/usernameText2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5sp"
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/messageText2"
+            android:layout_width="wrap_content"
+            android:layout_height="30sp"
+            android:layout_marginLeft="5sp" />
+
+        <TextView
+            android:id="@+id/timeText2"
+            android:layout_width="wrap_content"
+            android:layout_height="20sp"
+            android:layout_marginLeft="10sp"
+            android:layout_marginRight="15sp"
+            android:text="9:00 AM" />
+    </LinearLayout>
+</RelativeLayout>

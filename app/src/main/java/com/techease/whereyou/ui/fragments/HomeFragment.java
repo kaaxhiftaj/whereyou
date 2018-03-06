@@ -252,9 +252,6 @@ public class HomeFragment extends Fragment implements LocationListener {
         }
 
 
-        // For zooming automatically to the location of the marker
-//        cameraPosition = new CameraPosition.Builder().target(latLng).zoom(12).build();
-//        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
     private void MyMethod(GoogleMap googleMap, final LatLng latLng) {
