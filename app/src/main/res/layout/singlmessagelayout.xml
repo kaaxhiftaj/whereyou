@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="right"
         android:layout_margin="2sp"
-android:visibility="gone"
+        android:visibility="gone"
         android:layout_alignParentRight="true"
         android:background="@drawable/messageshape"
         android:orientation="vertical">
@@ -70,6 +70,7 @@ android:visibility="gone"
             android:layout_height="20sp"
             android:layout_marginLeft="10sp"
             android:layout_marginRight="15sp"
+            android:layout_marginBottom="5sp"
             android:text="9:00 AM" />
     </LinearLayout>
 </RelativeLayout>

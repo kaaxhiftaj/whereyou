@@ -12,7 +12,6 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.techease.whereyou.R;
-import com.techease.whereyou.ui.fragments.ChatFragment;
 import com.techease.whereyou.ui.models.GroupsModel;
 
 import java.util.List;
@@ -44,8 +43,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.MyViewHold
         holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Fragment fragment=new ChatFragment();
-                ((AppCompatActivity)context).getFragmentManager().beginTransaction().replace(R.id.fragment_main,fragment).addToBackStack("abc").commit();
+
 
             }
         });

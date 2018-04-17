@@ -241,7 +241,8 @@ public class HomeFragment extends Fragment implements LocationListener {
 
         LatLng latLng = new LatLng(reviewLocation.getLat(), reviewLocation.getLon());
         Log.d("zmaLatlng",latLng.toString());
-        if (latLng!=null)
+        String abc=String.valueOf(latLng);
+        if (!abc.equals(""))
         {
             Marker m;
             m = googleMap.addMarker(new MarkerOptions().position(latLng).title(reviewLocation.getLocationName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.map_location)));
