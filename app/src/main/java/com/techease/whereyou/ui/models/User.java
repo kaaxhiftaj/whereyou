@@ -7,25 +7,23 @@ package com.techease.whereyou.ui.models;
 public class User {
 
 
-
     private String userId;
     private String name;
     private String email;
-    private String mobile ;
+    private String mobile;
 
     public User() {
 
     }
 
 
-    public User(String userId, String name , String email ,String mobile) {
+    public User(String userId, String name, String email, String mobile) {
 
         this.userId = userId;
         this.name = name;
-        this. email = email;
-        this.mobile = mobile ;
+        this.email = email;
+        this.mobile = mobile;
     }
-
 
 
     public String getName() {
@@ -35,7 +33,6 @@ public class User {
     public void setName(String name) {
         this.name = name;
     }
-
 
 
     public String getUserId() {

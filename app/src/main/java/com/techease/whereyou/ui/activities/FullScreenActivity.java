@@ -8,9 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
 
-
 import com.techease.whereyou.R;
-import com.techease.whereyou.ui.fragments.LoginFragment;
 import com.techease.whereyou.ui.fragments.RegisterFragment;
 
 import butterknife.ButterKnife;
@@ -29,7 +27,7 @@ public class FullScreenActivity extends AppCompatActivity {
                     android.Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
         }
 
-            Window window = this.getWindow();
+        Window window = this.getWindow();
         window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimary));

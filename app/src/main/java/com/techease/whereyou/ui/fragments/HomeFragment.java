@@ -74,22 +74,17 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 public class HomeFragment extends Fragment implements LocationListener {
 
 
+    private static final long MIN_TIME = 400;
+    private static final float MIN_DISTANCE = 1000;
     MapView mMapView;
-
-
     int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     boolean bolFlag = false;
-    private GoogleMap googleMap;
     Unbinder unbinder;
     LatLng latLng;
     List<ReviewLocation> reviewLocationsList = new ArrayList<>();
-    private LocationManager locationManager;
-    private static final long MIN_TIME = 400;
-    private static final float MIN_DISTANCE = 1000;
     String Address;
     float ratingBarValue;
     FirebaseAuth mAuth;
-    private DatabaseReference mFirebaseDatabase;
     CameraPosition cameraPosition;
     FirebaseUser firebaseUser;
     android.support.v7.app.AlertDialog alertDialog;
@@ -97,6 +92,9 @@ public class HomeFragment extends Fragment implements LocationListener {
     PlaceAutocompleteFragment autocompleteFragment;
     MapFragment mapFragment;
     boolean hasPoints = false;
+    private GoogleMap googleMap;
+    private LocationManager locationManager;
+    private DatabaseReference mFirebaseDatabase;
     private HashMap<String, String> mHashMap = new HashMap<String, String>();
 
 
@@ -210,12 +208,17 @@ public class HomeFragment extends Fragment implements LocationListener {
     @Override
     public void onResume() {
         super.onResume();
-
+        getActivity().setTitle("HOME");
     }
 
     @Override
     public void onPause() {
         super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
         getChildFragmentManager().beginTransaction().remove(autocompleteFragment).commit();
         getChildFragmentManager().beginTransaction().remove(mapFragment).commit();
     }

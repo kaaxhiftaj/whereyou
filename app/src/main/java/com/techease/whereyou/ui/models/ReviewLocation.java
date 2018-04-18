@@ -5,10 +5,9 @@ package com.techease.whereyou.ui.models;
  */
 
 public class ReviewLocation {
+    double lat, lon;
     private String userId, locationName, comment;
     private double ratValue;
-    double lat, lon;
-
 
 
     public ReviewLocation() {
@@ -20,7 +19,7 @@ public class ReviewLocation {
         this.comment = comment;
         this.locationName = locationName;
         this.lat = lat;
-        this.lon = lon ;
+        this.lon = lon;
         this.ratValue = ratValue;
 
 

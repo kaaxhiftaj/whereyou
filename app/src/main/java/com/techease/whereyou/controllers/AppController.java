@@ -13,9 +13,9 @@ import android.support.v4.content.ContextCompat;
 
 public class AppController extends MultiDexApplication {
 
-    private static AppController mInstance;
     public static double USER_LOCATION_LAT = 0.0;
     public static double USER_LOCATION_LONG = 0.0;
+    private static AppController mInstance;
 
     public static AppController getInstance() {
         return mInstance;
@@ -34,19 +34,9 @@ public class AppController extends MultiDexApplication {
         return mInstance;
     }
 
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        mInstance = this;
-
-    }
-
-
     public static Resources resources() {
         return getInstance().getResources();
     }
-
 
     public static int color(int resId) {
         return ContextCompat.getColor(getInstance(), resId);
@@ -55,7 +45,6 @@ public class AppController extends MultiDexApplication {
     public static Drawable drawable(int resId) {
         return ContextCompat.getDrawable(getInstance(), resId);
     }
-
 
     public static String string(int resId) {
         return resources().getString(resId);
@@ -67,6 +56,13 @@ public class AppController extends MultiDexApplication {
 
     public static String[] stringArray(int resId) {
         return resources().getStringArray(resId);
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mInstance = this;
+
     }
 
     @Override

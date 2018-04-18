@@ -53,16 +53,13 @@ public class RegisterFragment extends Fragment {
 
     @BindView(R.id.signup_btnFb)
     Button signup_btnFb;
-
-
-    private FirebaseAuth mAuth;
     DatabaseReference mDatabase;
     String email, password, name, mobile;
     android.support.v7.app.AlertDialog alertDialog;
     Unbinder unbinder;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-
+    private FirebaseAuth mAuth;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

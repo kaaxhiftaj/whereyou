@@ -27,8 +27,8 @@ public class GroupsFragment extends Fragment {
     RecyclerView rvGroups;
     List<GroupsModel> models;
     GroupsAdapter groupsAdapter;
-    private DatabaseReference mFirebaseDatabase;
     android.support.v7.app.AlertDialog alertDialog;
+    private DatabaseReference mFirebaseDatabase;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -71,4 +71,9 @@ public class GroupsFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().setTitle("GROUPS");
+    }
 }

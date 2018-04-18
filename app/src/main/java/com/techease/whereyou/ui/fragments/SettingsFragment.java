@@ -1,7 +1,7 @@
 package com.techease.whereyou.ui.fragments;
 
-import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,11 +23,10 @@ import butterknife.Unbinder;
 public class SettingsFragment extends Fragment {
 
     @BindView(R.id.settingsName)
-        TextView name ;
-
+    TextView name;
+    Unbinder unbinder;
     private FirebaseAuth mAuth;
     private DatabaseReference mFirebaseDatabase;
-    Unbinder unbinder ;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,6 +58,12 @@ public class SettingsFragment extends Fragment {
             }
         });
         return v;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getActivity().setTitle("SETTINGS");
     }
 }
 

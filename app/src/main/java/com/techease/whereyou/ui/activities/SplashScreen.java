@@ -46,14 +46,17 @@ public class SplashScreen extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        handler.removeCallbacksAndMessages(null);
+        if (handler != null)
+            handler.removeCallbacksAndMessages(null);
     }
 
     public void check() {
         if (user_id.equals("")) {
+            handler = null;
             startActivity(new Intent(SplashScreen.this, FullScreenActivity.class));
             finish();
         } else {
+            handler = null;
             startActivity(new Intent(SplashScreen.this, MainActivity.class));
             finish();
         }

@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
     String club_id;
+    NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity
         editor = sharedPreferences.edit();
 
         homeFragment = new HomeFragment();
-        getFragmentManager().beginTransaction().replace(R.id.fragment_main, homeFragment).addToBackStack(null).commit();
+        getFragmentManager().beginTransaction().replace(R.id.fragment_main, homeFragment).addToBackStack("HOME").commit();
         setTitle("HOME");
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
 
         Menu m = navigationView.getMenu();
         for (int i = 0; i < m.size(); i++) {
@@ -87,8 +88,23 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (getFragmentManager().getBackStackEntryCount() > 1) {
+            getFragmentManager().popBackStack();
+            if (getFragmentManager().getBackStackEntryCount() > 1) {
+                String ide = getFragmentManager().getBackStackEntryAt(getFragmentManager().getBackStackEntryCount() - 2).getName();
+                if (ide.equals("HOME")) {
+                    navigationView.getMenu().getItem(0).setChecked(true);
+                } else if (ide.equals("GROUPS")) {
+                    navigationView.getMenu().getItem(1).setChecked(true);
+                } else if (ide.equals("REVIEWS")) {
+                    navigationView.getMenu().getItem(2).setChecked(true);
+                } else if (ide.equals("SETTINGS")) {
+                    navigationView.getMenu().getItem(3).setChecked(true);
+                }
+            }
+
         } else {
-            super.onBackPressed();
+            finish();
         }
     }
 
@@ -122,26 +138,27 @@ public class MainActivity extends AppCompatActivity
             case R.id.home:
                 if (homeFragment == null)
                     homeFragment = new HomeFragment();
-                getFragmentManager().beginTransaction().replace(R.id.fragment_main, homeFragment).addToBackStack(null).commit();
+                getFragmentManager().beginTransaction().replace(R.id.fragment_main, homeFragment).addToBackStack("HOME").commit();
                 break;
             case R.id.groups:
                 if (groupFragment == null)
                     groupFragment = new GroupsFragment();
-                getFragmentManager().beginTransaction().replace(R.id.fragment_main, groupFragment).addToBackStack(null).commit();
+                getFragmentManager().beginTransaction().replace(R.id.fragment_main, groupFragment).addToBackStack("GROUPS").commit();
                 break;
             case R.id.reviews:
                 if (reviewsFragment == null)
                     reviewsFragment = new ReviewsFragment();
-                getFragmentManager().beginTransaction().replace(R.id.fragment_main, reviewsFragment).addToBackStack(null).commit();
+                getFragmentManager().beginTransaction().replace(R.id.fragment_main, reviewsFragment).addToBackStack("REVIEWS").commit();
                 break;
             case R.id.settings:
                 if (settingsFragment == null)
                     settingsFragment = new SettingsFragment();
-                getFragmentManager().beginTransaction().replace(R.id.fragment_main, settingsFragment).addToBackStack(null).commit();
+                getFragmentManager().beginTransaction().replace(R.id.fragment_main, settingsFragment).addToBackStack("SETTINGS").commit();
                 break;
             case R.id.logout:
                 editor.clear().commit();
-                startActivity(new Intent(MainActivity.this, SplashScreen.class));
+                startActivity(new Intent(MainActivity.this, FullScreenActivity.class));
+                finish();
                 break;
         }
 

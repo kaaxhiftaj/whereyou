@@ -17,12 +17,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.techease.whereyou.R;
 import com.techease.whereyou.ui.activities.MainActivity;
 import com.techease.whereyou.utils.AlertsUtils;
@@ -34,26 +30,25 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
-public class LoginFragment extends Fragment{
+public class LoginFragment extends Fragment {
 
 
     @BindView(R.id.et_signin_email)
-    EditText signin_email ;
+    EditText signin_email;
 
     @BindView(R.id.et_signin_password)
-    EditText signin_password ;
+    EditText signin_password;
 
     @BindView(R.id.signin_next)
-    ImageButton signin_next ;
+    ImageButton signin_next;
 
-    Unbinder unbinder ;
-    private FirebaseAuth mAuth;
+    Unbinder unbinder;
     DatabaseReference mDatabase;
-    String email , password;
-
+    String email, password;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
     android.support.v7.app.AlertDialog alertDialog;
+    private FirebaseAuth mAuth;
 
     public static LoginFragment newInstance() {
         Bundle args = new Bundle();
@@ -67,26 +62,23 @@ public class LoginFragment extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_login, container, false);
-        unbinder = ButterKnife.bind(this, v );
+        unbinder = ButterKnife.bind(this, v);
         mAuth = FirebaseAuth.getInstance();
-        mDatabase= FirebaseDatabase.getInstance().getReference().child("user");
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("user");
         sharedPreferences = getActivity().getSharedPreferences(Configuration.MY_PREF, Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
-        ToggleSwitch toggleSwitch=(ToggleSwitch)v.findViewById(R.id.signintoggle);
+        ToggleSwitch toggleSwitch = (ToggleSwitch) v.findViewById(R.id.signintoggle);
         toggleSwitch.setOnToggleSwitchChangeListener(new BaseToggleSwitch.OnToggleSwitchChangeListener() {
             @Override
             public void onToggleSwitchChangeListener(int position, boolean isChecked) {
 
-                if (position==0)
-                {
-                    Fragment fragment=new RegisterFragment();
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_container,fragment).addToBackStack("abc").commit();
-                }
-                else if (position==1)
-                {
-                    Fragment fragment=new LoginFragment();
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_container,fragment).addToBackStack("abc").commit();
+                if (position == 0) {
+                    Fragment fragment = new RegisterFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack("abc").commit();
+                } else if (position == 1) {
+                    Fragment fragment = new LoginFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack("abc").commit();
                 }
             }
         });
@@ -96,9 +88,9 @@ public class LoginFragment extends Fragment{
                 if (alertDialog == null)
                     alertDialog = AlertsUtils.createProgressDialog(getActivity());
                 alertDialog.show();
-                email= signin_email.getText().toString();
+                email = signin_email.getText().toString();
                 password = signin_password.getText().toString();
-                Signin(email,password);
+                Signin(email, password);
             }
         });
 
@@ -106,8 +98,7 @@ public class LoginFragment extends Fragment{
     }
 
 
-
-    public  void Signin(String email, String password){
+    public void Signin(String email, String password) {
 
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
@@ -115,11 +106,12 @@ public class LoginFragment extends Fragment{
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            final String userId=mAuth.getCurrentUser().getUid();
+                            final String userId = mAuth.getCurrentUser().getUid();
                             editor.putString("user_id", userId).commit();
                             if (alertDialog != null)
                                 alertDialog.dismiss();
                             startActivity(new Intent(getActivity(), MainActivity.class));
+                            getActivity().finish();
                         } else {
 
                             if (alertDialog != null)

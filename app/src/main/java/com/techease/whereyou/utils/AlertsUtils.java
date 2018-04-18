@@ -24,7 +24,6 @@ public class AlertsUtils {
      */
 
 
-
     public static AlertDialog createProgressDialog(Activity activity) {
 
 

@@ -5,7 +5,7 @@ package com.techease.whereyou.utils;
  */
 
 public class Configuration {
-        public static String USER_URL = "";
+    public static String USER_URL = "";
     public static String MY_PREF = "com.whereyou";
 
 

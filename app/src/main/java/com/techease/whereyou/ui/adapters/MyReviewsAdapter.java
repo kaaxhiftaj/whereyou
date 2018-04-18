@@ -1,19 +1,13 @@
 package com.techease.whereyou.ui.adapters;
 
-import android.app.Fragment;
 import android.content.Context;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.techease.whereyou.R;
 import com.techease.whereyou.ui.models.ReviewLocation;
@@ -47,9 +41,9 @@ public class MyReviewsAdapter extends RecyclerView.Adapter<MyReviewsAdapter.MyVi
         final ReviewLocation model = myReviewsList.get(position);
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
-          holder.locationName.setText(model.getLocationName());
-          holder.comment.setText(model.getComment());
-          holder.ratingBar.setRating((float) model.getRatValue());
+        holder.locationName.setText(model.getLocationName());
+        holder.comment.setText(model.getComment());
+        holder.ratingBar.setRating((float) model.getRatValue());
 
 
     }
@@ -64,14 +58,14 @@ public class MyReviewsAdapter extends RecyclerView.Adapter<MyReviewsAdapter.MyVi
 
         ImageView imageViewn;
         TextView locationName, comment;
-        me.zhanghai.android.materialratingbar.MaterialRatingBar ratingBar ;
+        me.zhanghai.android.materialratingbar.MaterialRatingBar ratingBar;
 
 
         public MyViewHolder(View itemView) {
             super(itemView);
             locationName = (TextView) itemView.findViewById(R.id.review_location_name);
             comment = (TextView) itemView.findViewById(R.id.reviews_comment);
-            ratingBar = (me.zhanghai.android.materialratingbar.MaterialRatingBar)itemView.findViewById(R.id.ratting_bar);
+            ratingBar = (me.zhanghai.android.materialratingbar.MaterialRatingBar) itemView.findViewById(R.id.ratting_bar);
         }
 
     }

@@ -18,12 +18,12 @@ public class GroupsModel {
         this.groupId = groupId;
     }
 
-    public void setRatingValue(double ratingValue) {
-        this.ratingValue = ratingValue;
-    }
-
     public double getRatingValue() {
         return ratingValue;
+    }
+
+    public void setRatingValue(double ratingValue) {
+        this.ratingValue = ratingValue;
     }
 
     public String getGroupName() {
