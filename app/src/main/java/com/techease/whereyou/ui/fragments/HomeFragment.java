@@ -10,6 +10,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -27,6 +28,7 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -39,6 +41,9 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -85,6 +90,8 @@ public class HomeFragment extends Fragment implements LocationListener {
     FirebaseUser firebaseUser;
     android.support.v7.app.AlertDialog alertDialog;
     LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
+    boolean hasPoints = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -173,15 +180,19 @@ public class HomeFragment extends Fragment implements LocationListener {
         mFirebaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                     ReviewLocation reviewLocation = dataSnapshot1.getValue(ReviewLocation.class);
 
                     if (alertDialog != null)
                         alertDialog.dismiss();
                     showMarker(reviewLocation);
+                    hasPoints = true;
                 }
-                LatLngBounds bounds = builder.build();
-                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 80));
+                if (hasPoints) {
+                    LatLngBounds bounds = builder.build();
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 80));
+                }
             }
 
             @Override
@@ -257,13 +268,13 @@ public class HomeFragment extends Fragment implements LocationListener {
         googleMap.addMarker(new MarkerOptions().position(location).title(Address));
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(location));
         googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(10));
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(16));
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 // AlertsUtils.showMarkerDialog(getActivity(),marker.getTitle());
                 showMarkerDialog(getActivity(), marker.getTitle(), latLng);
-                return false;
+                return true;
             }
 
         });
@@ -272,12 +283,14 @@ public class HomeFragment extends Fragment implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-//        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-//        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
-//        if (googleMap != null) {
-//            googleMap.animateCamera(cameraUpdate);
-//            locationManager.removeUpdates(this);
-//        }
+        if (!hasPoints) {
+            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16);
+            if (googleMap != null) {
+                googleMap.animateCamera(cameraUpdate);
+                locationManager.removeUpdates(this);
+            }
+        }
     }
 
     @Override
@@ -353,12 +366,25 @@ public class HomeFragment extends Fragment implements LocationListener {
         btnReview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseAuth firebaseAuth;
-                firebaseAuth = FirebaseAuth.getInstance();
-                String Uid = firebaseAuth.getUid();
+                FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                String Uid = firebaseUser.getUid();
                 ReviewLocation reviewLocation = new ReviewLocation(Uid, message, editText.getText().toString(), latLngObject.latitude, latLngObject.longitude, ratingBar.getRating());
                 DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-                database.child("ReviewLocation").child(message).setValue(reviewLocation);
+                database.child("ReviewLocation").child(message).setValue(reviewLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d("usho", "review");
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("wanasho", "review");
+                        Log.e("Error", e.toString());
+                    }
+                });
                 alertDialog.dismiss();
 
             }

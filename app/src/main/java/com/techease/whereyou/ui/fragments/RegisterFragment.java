@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.techease.whereyou.R;
@@ -34,30 +35,30 @@ import butterknife.Unbinder;
 
 public class RegisterFragment extends Fragment {
 
-@BindView(R.id.et_signup_fullname)
-    EditText signup_fullname ;
+    @BindView(R.id.et_signup_fullname)
+    EditText signup_fullname;
 
     @BindView(R.id.et_signup_email)
-    EditText signup_email ;
+    EditText signup_email;
 
     @BindView(R.id.et_signup_phone)
-    EditText signup_phone ;
+    EditText signup_phone;
 
     @BindView(R.id.et_signup_password)
-    EditText signup_password ;
+    EditText signup_password;
 
     @BindView(R.id.signup_next)
-    ImageButton signup_next ;
+    ImageButton signup_next;
 
     @BindView(R.id.signup_btnFb)
-    Button signup_btnFb ;
+    Button signup_btnFb;
 
 
     private FirebaseAuth mAuth;
     DatabaseReference mDatabase;
-    String email , password , name , mobile;
+    String email, password, name, mobile;
     android.support.v7.app.AlertDialog alertDialog;
-    Unbinder unbinder ;
+    Unbinder unbinder;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
 
@@ -66,28 +67,25 @@ public class RegisterFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v =  inflater.inflate(R.layout.fragment_register, container, false);
-        unbinder = ButterKnife.bind(this, v );
+        View v = inflater.inflate(R.layout.fragment_register, container, false);
+        unbinder = ButterKnife.bind(this, v);
         mAuth = FirebaseAuth.getInstance();
-        mDatabase= FirebaseDatabase.getInstance().getReference().child("user");
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("user");
         sharedPreferences = getActivity().getSharedPreferences(Configuration.MY_PREF, Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
 
-        ToggleSwitch toggleSwitch=(ToggleSwitch)v.findViewById(R.id.signuptoggle);
+        ToggleSwitch toggleSwitch = (ToggleSwitch) v.findViewById(R.id.signuptoggle);
         toggleSwitch.setOnToggleSwitchChangeListener(new BaseToggleSwitch.OnToggleSwitchChangeListener() {
             @Override
             public void onToggleSwitchChangeListener(int position, boolean isChecked) {
 
-                if (position==0)
-                {
-                    Fragment fragment=new RegisterFragment();
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_container,fragment).addToBackStack("abc").commit();
-                }
-                else if (position==1)
-                {
-                    Fragment fragment=new LoginFragment();
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_container,fragment).addToBackStack("abc").commit();
+                if (position == 0) {
+                    Fragment fragment = new RegisterFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack("abc").commit();
+                } else if (position == 1) {
+                    Fragment fragment = new LoginFragment();
+                    getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).addToBackStack("abc").commit();
                 }
             }
         });
@@ -98,39 +96,39 @@ public class RegisterFragment extends Fragment {
                 if (alertDialog == null)
                     alertDialog = AlertsUtils.createProgressDialog(getActivity());
                 alertDialog.show();
-                email= signup_email.getText().toString();
+                email = signup_email.getText().toString();
                 password = signup_password.getText().toString();
                 name = signup_fullname.getText().toString();
-                editor.putString("name",name).commit();
+                editor.putString("name", name).commit();
                 mobile = signup_phone.getText().toString();
-                Signup(email,password);
+                Signup(email, password);
             }
         });
 
 
-
-        return v ;
+        return v;
     }
 
-    public void Signup(final String email, String password){
+    public void Signup(final String email, String password) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            String userid   = mAuth.getCurrentUser().getUid();
+                            String userid = mAuth.getCurrentUser().getUid();
                             editor.putString("user_id", userid).commit();
                             if (alertDialog != null)
                                 alertDialog.dismiss();
 
-                            FirebaseAuth firebaseAuth;
-                            firebaseAuth = FirebaseAuth.getInstance();
-                            String Uid = firebaseAuth.getUid();
+                            FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+                            FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+                            String Uid = firebaseUser.getUid();
                             User use = new User(Uid, name, email, mobile);
-                            DatabaseReference current_user_db=mDatabase.child(userid);
+                            DatabaseReference current_user_db = mDatabase.child(userid);
                             current_user_db.setValue(use);
                             startActivity(new Intent(getActivity(), MainActivity.class));
+                            getActivity().finish();
 
                         } else {
                             // If sign in fails, display a message to the user.
