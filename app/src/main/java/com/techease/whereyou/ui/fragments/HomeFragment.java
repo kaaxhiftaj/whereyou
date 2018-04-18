@@ -262,7 +262,6 @@ public class HomeFragment extends Fragment implements LocationListener {
         Log.d("zmaLatlng", latLng.toString());
         if (latLng != null) {
             Marker m = googleMap.addMarker(new MarkerOptions().position(latLng).title(reviewLocation.getLocationName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.map_location)));
-
             googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
                 @Override
                 public boolean onMarkerClick(final Marker marker) {
@@ -361,9 +360,90 @@ public class HomeFragment extends Fragment implements LocationListener {
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(16));
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
-            public boolean onMarkerClick(Marker marker) {
+            public boolean onMarkerClick(final Marker marker) {
                 // AlertsUtils.showMarkerDialog(getActivity(),marker.getTitle());
-                showMarkerDialog(place);
+                final String id = mHashMap.get(marker.getId());
+                if (id != null) {
+                    Place place = new Place() {
+                        @Override
+                        public String getId() {
+                            return id;
+                        }
+
+                        @Override
+                        public List<Integer> getPlaceTypes() {
+                            return null;
+                        }
+
+                        @Nullable
+                        @Override
+                        public CharSequence getAddress() {
+                            return marker.getTitle();
+                        }
+
+                        @Override
+                        public Locale getLocale() {
+                            return null;
+                        }
+
+                        @Override
+                        public CharSequence getName() {
+                            return null;
+                        }
+
+                        @Override
+                        public LatLng getLatLng() {
+                            return marker.getPosition();
+                        }
+
+                        @Nullable
+                        @Override
+                        public LatLngBounds getViewport() {
+                            return null;
+                        }
+
+                        @Nullable
+                        @Override
+                        public Uri getWebsiteUri() {
+                            return null;
+                        }
+
+                        @Nullable
+                        @Override
+                        public CharSequence getPhoneNumber() {
+                            return null;
+                        }
+
+                        @Override
+                        public float getRating() {
+                            return 0;
+                        }
+
+                        @Override
+                        public int getPriceLevel() {
+                            return 0;
+                        }
+
+                        @Nullable
+                        @Override
+                        public CharSequence getAttributions() {
+                            return null;
+                        }
+
+                        @Override
+                        public Place freeze() {
+                            return null;
+                        }
+
+                        @Override
+                        public boolean isDataValid() {
+                            return false;
+                        }
+                    };
+                    showMarkerDialog(place);
+                } else {
+                    showMarkerDialog(place);
+                }
                 return true;
             }
 
@@ -399,33 +479,52 @@ public class HomeFragment extends Fragment implements LocationListener {
     }
 
     public void showMarkerDialog(final Place place) {
-
-
-        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View dialogView = inflater.inflate(R.layout.custom_dialog
-                , null);
-        dialogBuilder.setView(dialogView);
-        final AlertDialog alertDialog = dialogBuilder.create();
-        TextView tvTown = dialogView.findViewById(R.id.tvTownCustomDialog);
-        tvTown.setText(place.getAddress());
-        Button btnReview = dialogView.findViewById(R.id.btnReviewCustomDialog);
-        Button btnExisting = dialogView.findViewById(R.id.btnExistingCustomDialog);
-        btnReview.setOnClickListener(new View.OnClickListener() {
+        final boolean[] isPlaceExist = new boolean[1];
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("ReviewLocation");
+        database.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onClick(View view) {
-                showReviewDialog(place);
-                alertDialog.dismiss();
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChild(place.getId())) {
+                    isPlaceExist[0] = true;
+                }
+                final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+                LayoutInflater inflater = getActivity().getLayoutInflater();
+                final View dialogView = inflater.inflate(R.layout.custom_dialog
+                        , null);
+                dialogBuilder.setView(dialogView);
+                final AlertDialog alertDialog = dialogBuilder.create();
+                TextView tvTown = dialogView.findViewById(R.id.tvTownCustomDialog);
+                tvTown.setText(place.getAddress());
+                Button btnReview = dialogView.findViewById(R.id.btnReviewCustomDialog);
+                Button btnExisting = dialogView.findViewById(R.id.btnExistingCustomDialog);
+                btnReview.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showReviewDialog(place);
+                        alertDialog.dismiss();
+                    }
+                });
+                btnExisting.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(getActivity(), ChatActivity.class);
+                        intent.putExtra("place_id", place.getId());
+                        getActivity().startActivity(intent);
+                    }
+                });
+                if (!isPlaceExist[0]) {
+                    btnExisting.setEnabled(false);
+                }
+                alertDialog.show();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
-        btnExisting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
 
-                Toast.makeText(getActivity(), "done", Toast.LENGTH_SHORT).show();
-            }
-        });
-        alertDialog.show();
+
     }
 
 
