@@ -27,15 +27,16 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,17 +46,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.techease.whereyou.ui.models.ReviewLocation;
 import com.techease.whereyou.R;
+import com.techease.whereyou.ui.models.ReviewLocation;
 import com.techease.whereyou.utils.AlertsUtils;
 import com.techease.whereyou.utils.InternetUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 import static android.app.Activity.RESULT_CANCELED;
@@ -66,7 +64,7 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class HomeFragment extends Fragment implements LocationListener {
 
-    @BindView(R.id.mapView)
+
     MapView mMapView;
 
 
@@ -86,6 +84,7 @@ public class HomeFragment extends Fragment implements LocationListener {
     CameraPosition cameraPosition;
     FirebaseUser firebaseUser;
     android.support.v7.app.AlertDialog alertDialog;
+    LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -93,34 +92,10 @@ public class HomeFragment extends Fragment implements LocationListener {
         // Inflate the layout for this fragment
 
         View v = inflater.inflate(R.layout.fragment_home, container, false);
-        unbinder = ButterKnife.bind(this, v);
         //Declaration
 
-        if (alertDialog == null)
-            alertDialog = AlertsUtils.createProgressDialog(getActivity());
-
-
-        mAuth = FirebaseAuth.getInstance();
-        mFirebaseDatabase = FirebaseDatabase.getInstance().getReference().child("ReviewLocation");
-        firebaseUser=mAuth.getCurrentUser();
-        mFirebaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                    ReviewLocation reviewLocation = dataSnapshot1.getValue(ReviewLocation.class);
-
-                    if (alertDialog != null)
-                        alertDialog.dismiss();
-                    showMarker(reviewLocation);
-                }
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        MapFragment mapFragment = (MapFragment) getChildFragmentManager()
+                .findFragmentById(R.id.map);
 
 
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -131,8 +106,6 @@ public class HomeFragment extends Fragment implements LocationListener {
         }
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DISTANCE, this);
 
-        mMapView.onCreate(savedInstanceState);
-        mMapView.onResume();
 
         PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
                 getChildFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
@@ -158,8 +131,6 @@ public class HomeFragment extends Fragment implements LocationListener {
 
 
         if (InternetUtils.isNetworkConnected(getActivity())) {
-            mMapView.onCreate(savedInstanceState);
-            mMapView.onResume();
 
 
             try {
@@ -168,7 +139,7 @@ public class HomeFragment extends Fragment implements LocationListener {
                 e.printStackTrace();
             }
 
-            mMapView.getMapAsync(new OnMapReadyCallback() {
+            mapFragment.getMapAsync(new OnMapReadyCallback() {
                 @Override
                 public void onMapReady(GoogleMap mMap) {
                     googleMap = mMap;
@@ -179,6 +150,7 @@ public class HomeFragment extends Fragment implements LocationListener {
                         return;
                     }
                     googleMap.setMyLocationEnabled(true);
+                    getLocation();
 
                 }
             });
@@ -190,29 +162,56 @@ public class HomeFragment extends Fragment implements LocationListener {
         return v;
     }
 
+    private void getLocation() {
+        if (alertDialog == null)
+            alertDialog = AlertsUtils.createProgressDialog(getActivity());
+
+
+        mAuth = FirebaseAuth.getInstance();
+        mFirebaseDatabase = FirebaseDatabase.getInstance().getReference().child("ReviewLocation");
+        firebaseUser = mAuth.getCurrentUser();
+        mFirebaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    ReviewLocation reviewLocation = dataSnapshot1.getValue(ReviewLocation.class);
+
+                    if (alertDialog != null)
+                        alertDialog.dismiss();
+                    showMarker(reviewLocation);
+                }
+                LatLngBounds bounds = builder.build();
+                googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 80));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+
+        });
+    }
+
 
     @Override
     public void onResume() {
         super.onResume();
-        mMapView.onResume();
+
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mMapView.onPause();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mMapView.onDestroy();
     }
 
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        mMapView.onLowMemory();
     }
 
 
@@ -240,14 +239,12 @@ public class HomeFragment extends Fragment implements LocationListener {
 
 
         LatLng latLng = new LatLng(reviewLocation.getLat(), reviewLocation.getLon());
-        Log.d("zmaLatlng",latLng.toString());
-        if (latLng!=null)
-        {
+        builder.include(latLng);
+        Log.d("zmaLatlng", latLng.toString());
+        if (latLng != null) {
             Marker m;
             m = googleMap.addMarker(new MarkerOptions().position(latLng).title(reviewLocation.getLocationName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.map_location)));
-        }
-        else
-        {
+        } else {
             Toast.makeText(getActivity(), "You have not searched places", Toast.LENGTH_SHORT).show();
         }
 
@@ -275,12 +272,12 @@ public class HomeFragment extends Fragment implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
-        if (googleMap != null) {
-            googleMap.animateCamera(cameraUpdate);
-            locationManager.removeUpdates(this);
-        }
+//        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+//        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 10);
+//        if (googleMap != null) {
+//            googleMap.animateCamera(cameraUpdate);
+//            locationManager.removeUpdates(this);
+//        }
     }
 
     @Override
@@ -359,7 +356,7 @@ public class HomeFragment extends Fragment implements LocationListener {
                 FirebaseAuth firebaseAuth;
                 firebaseAuth = FirebaseAuth.getInstance();
                 String Uid = firebaseAuth.getUid();
-                ReviewLocation reviewLocation = new ReviewLocation(Uid, message, editText.getText().toString(),latLngObject.latitude, latLngObject.longitude, ratingBar.getRating());
+                ReviewLocation reviewLocation = new ReviewLocation(Uid, message, editText.getText().toString(), latLngObject.latitude, latLngObject.longitude, ratingBar.getRating());
                 DatabaseReference database = FirebaseDatabase.getInstance().getReference();
                 database.child("ReviewLocation").child(message).setValue(reviewLocation);
                 alertDialog.dismiss();

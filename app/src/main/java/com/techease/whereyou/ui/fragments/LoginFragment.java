@@ -115,8 +115,11 @@ public class LoginFragment extends Fragment{
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            checkUserExist();
-
+                            final String userId=mAuth.getCurrentUser().getUid();
+                            editor.putString("user_id", userId).commit();
+                            if (alertDialog != null)
+                                alertDialog.dismiss();
+                            startActivity(new Intent(getActivity(), MainActivity.class));
                         } else {
 
                             if (alertDialog != null)
@@ -131,29 +134,5 @@ public class LoginFragment extends Fragment{
 
     }
 
-    private void checkUserExist() {
-        final String userId=mAuth.getCurrentUser().getUid();
-        mDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChild(userId))
-                {
-
-                    FirebaseUser user = mAuth.getCurrentUser();
-                    String userid = mAuth.getUid();
-                    editor.putString("user_id", userid).commit();
-                    if (alertDialog != null)
-                        alertDialog.dismiss();
-                    startActivity(new Intent(getActivity(), MainActivity.class));
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-    }
 
 }
