@@ -19,6 +19,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.techease.whereyou.R;
@@ -117,6 +118,9 @@ public class RegisterFragment extends Fragment {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             String userid = mAuth.getCurrentUser().getUid();
+                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                    .setDisplayName(signup_fullname.getText().toString()).build();
+                            mAuth.getCurrentUser().updateProfile(profileUpdates);
                             editor.putString("user_id", userid).commit();
                             if (alertDialog != null)
                                 alertDialog.dismiss();

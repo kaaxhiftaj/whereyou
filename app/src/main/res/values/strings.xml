@@ -13,7 +13,6 @@
     <string name="facebook_app_id">185716295518629</string>
     <string name="fb_login_protocol_scheme">fb185716295518629</string>
 
-
     <string name="title_activity_fullscreen">FullscreenActivity</string>
     <string name="title_activity_main">Home</string>
 

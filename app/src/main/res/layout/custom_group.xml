@@ -1,40 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="#fff"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/llParent"
         android:layout_width="match_parent"
         android:layout_height="80sp"
-        android:id="@+id/llParent"
         android:orientation="horizontal">
-    <TextView
-        android:id="@+id/tvName"
-        android:layout_width="0sp"
-        android:layout_weight="0.7"
-        android:layout_height="wrap_content"
-        android:text="Name"
-        android:textSize="17sp"
-        android:layout_margin="10sp"
-        android:textColor="@color/colorPrimary"
-        />
+
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="0sp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+            android:layout_weight="0.7"
+            android:text="Name"
+            android:textColor="@color/colorPrimary"
+            android:textSize="17sp" />
+
         <me.zhanghai.android.materialratingbar.MaterialRatingBar
+            android:id="@+id/ratting_bar"
+            style="@style/Widget.MaterialRatingBar.RatingBar"
             android:layout_width="wrap_content"
             android:layout_height="25sp"
             android:layout_gravity="right|center"
             android:layout_marginLeft="10sp"
+            android:clickable="false"
             android:indeterminateTint="@color/colorPrimary"
             app:mrb_fillBackgroundStars="@color/colorPrimary"
-            android:id="@+id/ratting_bar"
-            app:mrb_progressTint="@color/colorPrimary"
-            style="@style/Widget.MaterialRatingBar.RatingBar" />
+            app:mrb_progressTint="@color/colorPrimary" />
 
     </LinearLayout>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="3sp"
-        android:background="#eee"/>
+        android:background="#eee" />
 </LinearLayout>

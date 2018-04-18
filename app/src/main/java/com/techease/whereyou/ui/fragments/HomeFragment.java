@@ -1,7 +1,6 @@
 package com.techease.whereyou.ui.fragments;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
@@ -9,8 +8,10 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -52,12 +53,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.techease.whereyou.R;
+import com.techease.whereyou.ui.activities.ChatActivity;
 import com.techease.whereyou.ui.models.ReviewLocation;
 import com.techease.whereyou.utils.AlertsUtils;
 import com.techease.whereyou.utils.InternetUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.Unbinder;
 
@@ -90,8 +94,11 @@ public class HomeFragment extends Fragment implements LocationListener {
     FirebaseUser firebaseUser;
     android.support.v7.app.AlertDialog alertDialog;
     LatLngBounds.Builder builder = new LatLngBounds.Builder();
-
+    PlaceAutocompleteFragment autocompleteFragment;
+    MapFragment mapFragment;
     boolean hasPoints = false;
+    private HashMap<String, String> mHashMap = new HashMap<String, String>();
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -101,8 +108,7 @@ public class HomeFragment extends Fragment implements LocationListener {
         View v = inflater.inflate(R.layout.fragment_home, container, false);
         //Declaration
 
-        MapFragment mapFragment = (MapFragment) getChildFragmentManager()
-                .findFragmentById(R.id.map);
+        mapFragment = (MapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
 
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -114,7 +120,7 @@ public class HomeFragment extends Fragment implements LocationListener {
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME, MIN_DISTANCE, this);
 
 
-        PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
+        autocompleteFragment = (PlaceAutocompleteFragment)
                 getChildFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
         autocompleteFragment.setHint("Location");
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
@@ -122,10 +128,7 @@ public class HomeFragment extends Fragment implements LocationListener {
             public void onPlaceSelected(Place place) {
                 // TODO: Get info about the selected place.
                 Log.i("Place: ", place.getAddress().toString());
-                Address = String.valueOf(place.getAddress());
-                latLng = place.getLatLng();
-                MyMethod(googleMap, latLng);
-                //  strLocation = place.getAddress().toString();
+                zoomToSearchedLocation(place);
                 bolFlag = true;
             }
 
@@ -186,7 +189,7 @@ public class HomeFragment extends Fragment implements LocationListener {
 
                     if (alertDialog != null)
                         alertDialog.dismiss();
-                    showMarker(reviewLocation);
+                    mHashMap.put(showMarker(reviewLocation).getId(), dataSnapshot1.getKey());
                     hasPoints = true;
                 }
                 if (hasPoints) {
@@ -213,6 +216,8 @@ public class HomeFragment extends Fragment implements LocationListener {
     @Override
     public void onPause() {
         super.onPause();
+        getChildFragmentManager().beginTransaction().remove(autocompleteFragment).commit();
+        getChildFragmentManager().beginTransaction().remove(mapFragment).commit();
     }
 
     @Override
@@ -234,7 +239,7 @@ public class HomeFragment extends Fragment implements LocationListener {
                 Log.i(TAG, "Place: " + place.getName());
                 //  strLocation = place.getAddress().toString();
                 bolFlag = true;
-                MyMethod(googleMap, place.getLatLng());
+                zoomToSearchedLocation(place);
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(getActivity(), data);
                 // TODO: Handle the error.
@@ -246,34 +251,116 @@ public class HomeFragment extends Fragment implements LocationListener {
         }
     }
 
-    public void showMarker(ReviewLocation reviewLocation) {
+    public Marker showMarker(ReviewLocation reviewLocation) {
 
 
         LatLng latLng = new LatLng(reviewLocation.getLat(), reviewLocation.getLon());
         builder.include(latLng);
         Log.d("zmaLatlng", latLng.toString());
         if (latLng != null) {
-            Marker m;
-            m = googleMap.addMarker(new MarkerOptions().position(latLng).title(reviewLocation.getLocationName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.map_location)));
+            Marker m = googleMap.addMarker(new MarkerOptions().position(latLng).title(reviewLocation.getLocationName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.map_location)));
+
+            googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+                @Override
+                public boolean onMarkerClick(final Marker marker) {
+                    final String id = mHashMap.get(marker.getId());
+                    Place place = new Place() {
+                        @Override
+                        public String getId() {
+                            return id;
+                        }
+
+                        @Override
+                        public List<Integer> getPlaceTypes() {
+                            return null;
+                        }
+
+                        @Nullable
+                        @Override
+                        public CharSequence getAddress() {
+                            return marker.getTitle();
+                        }
+
+                        @Override
+                        public Locale getLocale() {
+                            return null;
+                        }
+
+                        @Override
+                        public CharSequence getName() {
+                            return null;
+                        }
+
+                        @Override
+                        public LatLng getLatLng() {
+                            return marker.getPosition();
+                        }
+
+                        @Nullable
+                        @Override
+                        public LatLngBounds getViewport() {
+                            return null;
+                        }
+
+                        @Nullable
+                        @Override
+                        public Uri getWebsiteUri() {
+                            return null;
+                        }
+
+                        @Nullable
+                        @Override
+                        public CharSequence getPhoneNumber() {
+                            return null;
+                        }
+
+                        @Override
+                        public float getRating() {
+                            return 0;
+                        }
+
+                        @Override
+                        public int getPriceLevel() {
+                            return 0;
+                        }
+
+                        @Nullable
+                        @Override
+                        public CharSequence getAttributions() {
+                            return null;
+                        }
+
+                        @Override
+                        public Place freeze() {
+                            return null;
+                        }
+
+                        @Override
+                        public boolean isDataValid() {
+                            return false;
+                        }
+                    };
+                    showMarkerDialog(place);
+                    return false;
+                }
+            });
+            return m;
         } else {
             Toast.makeText(getActivity(), "You have not searched places", Toast.LENGTH_SHORT).show();
+            return null;
         }
-
-
     }
 
-    private void MyMethod(GoogleMap googleMap, final LatLng latLng) {
-        googleMap = googleMap;
-        LatLng location = latLng;
-        googleMap.addMarker(new MarkerOptions().position(location).title(Address));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(location));
+    private void zoomToSearchedLocation(final Place place) {
+        googleMap.addMarker(new MarkerOptions().position(place.getLatLng()).title(String.valueOf(place.getAddress())));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
         googleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(16));
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 // AlertsUtils.showMarkerDialog(getActivity(),marker.getTitle());
-                showMarkerDialog(getActivity(), marker.getTitle(), latLng);
+                showMarkerDialog(place);
                 return true;
             }
 
@@ -308,23 +395,23 @@ public class HomeFragment extends Fragment implements LocationListener {
 
     }
 
-    public static void showMarkerDialog(final Activity activity, final String message, final LatLng latLng) {
+    public void showMarkerDialog(final Place place) {
 
 
-        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
-        LayoutInflater inflater = activity.getLayoutInflater();
+        final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.custom_dialog
                 , null);
         dialogBuilder.setView(dialogView);
         final AlertDialog alertDialog = dialogBuilder.create();
         TextView tvTown = dialogView.findViewById(R.id.tvTownCustomDialog);
-        tvTown.setText(message);
+        tvTown.setText(place.getAddress());
         Button btnReview = dialogView.findViewById(R.id.btnReviewCustomDialog);
         Button btnExisting = dialogView.findViewById(R.id.btnExistingCustomDialog);
         btnReview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showReviewDialog(activity, message, latLng);
+                showReviewDialog(place);
                 alertDialog.dismiss();
             }
         });
@@ -332,30 +419,30 @@ public class HomeFragment extends Fragment implements LocationListener {
             @Override
             public void onClick(View view) {
 
-                Toast.makeText(activity, "done", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "done", Toast.LENGTH_SHORT).show();
             }
         });
         alertDialog.show();
     }
 
 
-    public static void showReviewDialog(final Activity activity, final String message, final LatLng latLngObject) {
+    public void showReviewDialog(final Place place) {
 
         final String strTextBox;
         final float value;
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
-        LayoutInflater inflater = activity.getLayoutInflater();
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.custom_reviewdialog
                 , null);
         dialogBuilder.setView(dialogView);
         final AlertDialog alertDialog = dialogBuilder.create();
         TextView tvTown = dialogView.findViewById(R.id.tvAddress);
-        tvTown.setText(message);
+        tvTown.setText(place.getAddress());
 
         Button btnReview = dialogView.findViewById(R.id.btnSubmitCustomDialogReview);
         final RatingBar ratingBar = (RatingBar) dialogView.findViewById(R.id.ratingbar);
-        final EditText editText = (EditText) dialogView.findViewById(R.id.etTextBox);
-        strTextBox = editText.getText().toString();
+        final EditText etComment = (EditText) dialogView.findViewById(R.id.etTextBox);
+        strTextBox = etComment.getText().toString();
         ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, final float v, boolean b) {
@@ -366,29 +453,53 @@ public class HomeFragment extends Fragment implements LocationListener {
         btnReview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-                FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-                String Uid = firebaseUser.getUid();
-                ReviewLocation reviewLocation = new ReviewLocation(Uid, message, editText.getText().toString(), latLngObject.latitude, latLngObject.longitude, ratingBar.getRating());
-                DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-                database.child("ReviewLocation").child(message).setValue(reviewLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
+
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("ReviewLocation");
+                database.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (task.isSuccessful()) {
-                            Log.d("usho", "review");
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.hasChild(place.getId())) {
+                            Intent intent = new Intent(getActivity(), ChatActivity.class);
+                            intent.putExtra("place_id", place.getId());
+                            intent.putExtra("comment", etComment.getText().toString());
+                            getActivity().startActivity(intent);
+                        } else {
+                            placecomment(place, etComment.getText().toString(), ratingBar.getRating());
                         }
                     }
-                }).addOnFailureListener(new OnFailureListener() {
+
                     @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("wanasho", "review");
-                        Log.e("Error", e.toString());
+                    public void onCancelled(DatabaseError databaseError) {
+
                     }
                 });
+
                 alertDialog.dismiss();
 
             }
         });
         alertDialog.show();
+    }
+
+    private void placecomment(Place place, String comment, float rating) {
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        String Uid = firebaseUser.getUid();
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("ReviewLocation");
+        ReviewLocation reviewLocation = new ReviewLocation(Uid, String.valueOf(place.getAddress()), comment, place.getLatLng().latitude, place.getLatLng().longitude, rating);
+        database.child("ReviewLocation").child(place.getId()).setValue(reviewLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Log.d("usho", "review");
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.d("wanasho", "review");
+                Log.e("Error", e.toString());
+            }
+        });
     }
 }

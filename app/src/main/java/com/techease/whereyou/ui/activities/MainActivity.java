@@ -31,10 +31,10 @@ import com.techease.whereyou.ui.fragments.SettingsFragment;
 import com.techease.whereyou.utils.Configuration;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener , ForceUpdateChecker.OnUpdateNeededListener{
+        implements NavigationView.OnNavigationItemSelectedListener, ForceUpdateChecker.OnUpdateNeededListener {
 
 
-    Fragment fragment;
+    Fragment homeFragment, groupFragment, reviewsFragment, settingsFragment;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
     String club_id;
@@ -51,8 +51,8 @@ public class MainActivity extends AppCompatActivity
         sharedPreferences = MainActivity.this.getSharedPreferences(Configuration.MY_PREF, Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
 
-        fragment = new HomeFragment();
-        getFragmentManager().beginTransaction().replace(R.id.fragment_main, fragment).commit();
+        homeFragment = new HomeFragment();
+        getFragmentManager().beginTransaction().replace(R.id.fragment_main, homeFragment).addToBackStack(null).commit();
         setTitle("HOME");
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity
         for (int i = 0; i < m.size(); i++) {
             MenuItem mi = m.getItem(i);
 
-            //for aapplying a font to subMenu ...
+            //for applying a font to subMenu ...
             SubMenu subMenu = mi.getSubMenu();
             if (subMenu != null && subMenu.size() > 0) {
                 for (int j = 0; j < subMenu.size(); j++) {
@@ -118,31 +118,39 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.home) {
-            fragment = new HomeFragment();
-
-        } else if (id == R.id.groups) {
-            fragment = new GroupsFragment();
-        } else if (id == R.id.reviews) {
-            fragment = new ReviewsFragment();
-        } else if (id == R.id.settings) {
-            fragment = new SettingsFragment();
-        }else if (id == R.id.logout) {
-            editor.clear().commit();
-            startActivity(new Intent(MainActivity.this, SplashScreen.class));
+        switch (item.getItemId()) {
+            case R.id.home:
+                if (homeFragment == null)
+                    homeFragment = new HomeFragment();
+                getFragmentManager().beginTransaction().replace(R.id.fragment_main, homeFragment).addToBackStack(null).commit();
+                break;
+            case R.id.groups:
+                if (groupFragment == null)
+                    groupFragment = new GroupsFragment();
+                getFragmentManager().beginTransaction().replace(R.id.fragment_main, groupFragment).addToBackStack(null).commit();
+                break;
+            case R.id.reviews:
+                if (reviewsFragment == null)
+                    reviewsFragment = new ReviewsFragment();
+                getFragmentManager().beginTransaction().replace(R.id.fragment_main, reviewsFragment).addToBackStack(null).commit();
+                break;
+            case R.id.settings:
+                if (settingsFragment == null)
+                    settingsFragment = new SettingsFragment();
+                getFragmentManager().beginTransaction().replace(R.id.fragment_main, settingsFragment).addToBackStack(null).commit();
+                break;
+            case R.id.logout:
+                editor.clear().commit();
+                startActivity(new Intent(MainActivity.this, SplashScreen.class));
+                break;
         }
 
-        getFragmentManager().beginTransaction().replace(R.id.fragment_main, fragment).addToBackStack("tag").commit();
         item.setChecked(true);
         setTitle(item.getTitle());
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
 
 
     private void applyFontToMenuItem(MenuItem mi) {

@@ -29,15 +29,18 @@ public class GroupsFragment extends Fragment {
     GroupsAdapter groupsAdapter;
     private DatabaseReference mFirebaseDatabase;
     android.support.v7.app.AlertDialog alertDialog;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view= inflater.inflate(R.layout.fragment_groups, container, false);
+        View view = inflater.inflate(R.layout.fragment_groups, container, false);
 
-        rvGroups=(RecyclerView)view.findViewById(R.id.rvGroups);
+        rvGroups = (RecyclerView) view.findViewById(R.id.rvGroups);
         rvGroups.setLayoutManager(new LinearLayoutManager(getActivity()));
-        models=new ArrayList<>();
+        models = new ArrayList<>();
+        groupsAdapter = new GroupsAdapter(getActivity(), models);
+        rvGroups.setAdapter(groupsAdapter);
         if (alertDialog == null)
             alertDialog = AlertsUtils.createProgressDialog(getActivity());
         mFirebaseDatabase = FirebaseDatabase.getInstance().getReference().child("ReviewLocation");
@@ -46,17 +49,15 @@ public class GroupsFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                     ReviewLocation reviewLocation = dataSnapshot1.getValue(ReviewLocation.class);
-                    GroupsModel model=new GroupsModel();
-                     model.setGroupName(reviewLocation.getLocationName());
-                     model.setRatingValue(reviewLocation.getRatValue());
-                     models.add(model);
-                    groupsAdapter=new GroupsAdapter(getActivity(),models);
-                     groupsAdapter.notifyDataSetChanged();
-                    rvGroups.setAdapter(groupsAdapter);
-
+                    GroupsModel model = new GroupsModel();
+                    model.setGroupName(reviewLocation.getLocationName());
+                    model.setRatingValue(reviewLocation.getRatValue());
+                    model.setGroupId(dataSnapshot1.getKey());
+                    models.add(model);
                     if (alertDialog != null)
                         alertDialog.dismiss();
                 }
+                groupsAdapter.notifyDataSetChanged();
 
             }
 
