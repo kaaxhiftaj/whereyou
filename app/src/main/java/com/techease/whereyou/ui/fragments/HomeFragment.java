@@ -217,10 +217,15 @@ public class HomeFragment extends Fragment implements LocationListener {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDetach() {
+        super.onDetach();
         getChildFragmentManager().beginTransaction().remove(autocompleteFragment).commit();
         getChildFragmentManager().beginTransaction().remove(mapFragment).commit();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
     }
 
     @Override
@@ -566,7 +571,7 @@ public class HomeFragment extends Fragment implements LocationListener {
                             intent.putExtra("comment", etComment.getText().toString());
                             getActivity().startActivity(intent);
                         } else {
-                            placecomment(place, etComment.getText().toString(), ratingBar.getRating());
+                            placeComment(place, etComment.getText().toString(), ratingBar.getRating());
                         }
                     }
 
@@ -583,11 +588,11 @@ public class HomeFragment extends Fragment implements LocationListener {
         alertDialog.show();
     }
 
-    private void placecomment(Place place, String comment, float rating) {
+    private void placeComment(Place place, String comment, float rating) {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         String Uid = firebaseUser.getUid();
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("ReviewLocation");
+        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
         ReviewLocation reviewLocation = new ReviewLocation(Uid, String.valueOf(place.getAddress()), comment, place.getLatLng().latitude, place.getLatLng().longitude, rating);
         database.child("ReviewLocation").child(place.getId()).setValue(reviewLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override

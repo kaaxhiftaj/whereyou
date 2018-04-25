@@ -1,49 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:weightSum="1">
+    android:orientation="vertical">
 
-    <ListView
+    <ImageButton
+        android:id="@+id/btnSend"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:background="@color/colorPrimaryDark"
+        android:padding="10dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/send" />
+
+    <ImageButton
+        android:id="@+id/btnAttach"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="2dp"
+        android:layout_toStartOf="@+id/btnSend"
+        android:background="@color/colorPrimaryDark"
+        android:padding="10dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/orca_attach_photo_normal" />
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_above="@id/btnSend"
+        android:background="@color/green_color" />
+
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/list_of_messages"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="16dp" />
+        android:layout_height="match_parent"
+        android:layout_above="@id/line"
+        app:layoutManager="android.support.v7.widget.LinearLayoutManager" />
 
-    <LinearLayout
+    <EditText
+        android:id="@+id/editWriteMessage"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="1">
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
 
-        <EditText
-            android:id="@+id/input"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.9"
-            android:background="@android:color/white"
-            android:hint="Input"
-            android:textColor="@android:color/black"
-            android:padding="10dp" />
+        android:layout_marginTop="10dp"
+        android:layout_toStartOf="@id/btnAttach"
+        android:background="@android:color/transparent"
+        android:drawablePadding="20dp"
+        android:inputType="textLongMessage"
+        android:maxLines="1"
+        android:paddingLeft="7dp"
+        android:paddingRight="7dp"
+        android:textColorHint="#aeafaf"
+        android:textSize="15sp" />
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.1"
-            android:clickable="true"
-            android:focusable="true"
-            android:src="@android:drawable/ic_menu_send"
-            app:fabSize="mini" />
-
-    </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

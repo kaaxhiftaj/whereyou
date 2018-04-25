@@ -34,13 +34,17 @@ public class SplashScreen extends AppCompatActivity {
 
 
         handler = new Handler();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         handler.postDelayed(new Runnable() {
             public void run() {
                 check();
             }
         }, 2000L);
-
-
     }
 
     @Override

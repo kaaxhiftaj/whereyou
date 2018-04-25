@@ -3,6 +3,7 @@ package com.techease.whereyou.utils;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Environment;
 import android.support.v7.widget.AppCompatTextView;
 import android.text.SpannableStringBuilder;
 import android.text.method.LinkMovementMethod;
@@ -10,6 +11,11 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.TextView;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 public class GeneralUtils {
@@ -119,5 +125,18 @@ public class GeneralUtils {
         return progressDialog;
 
     }
+
+    public static File createImageFile(Context context) throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+        return image;
+    }
+
 
 }

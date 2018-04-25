@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
         android:allowBackup="true"
@@ -32,8 +33,8 @@
         <activity
             android:name=".ui.activities.FullScreenActivity"
             android:label="@string/title_activity_fullscreen"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
 
         <!-- Firebase   Notification Work here -->
 
@@ -74,6 +75,19 @@
         <uses-library android:name="com.google.android.maps" />
 
         <activity android:name=".ui.activities.ChatActivity"></activity>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.techease.whereyou.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+        <activity
+            android:name=".ui.activities.FullScreenImageActivity"
+            android:theme="@style/AppThemeFullScreenImage"></activity>
     </application>
 
 </manifest>

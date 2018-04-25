@@ -11,17 +11,38 @@ public class ChatMessage {
     private String messageText;
     private String messageUser;
     private long messageTime;
+    private String id;
+    private boolean link;
 
-    public ChatMessage(String messageText, String messageUser) {
+    public ChatMessage(String messageText, String messageUser, String id, boolean link) {
         this.messageText = messageText;
         this.messageUser = messageUser;
 
         // Initialize to current time
         messageTime = new Date().getTime();
+        this.id = id;
+        this.link = link;
     }
+
 
     public ChatMessage() {
 
+    }
+
+    public boolean isLink() {
+        return link;
+    }
+
+    public void setLink(boolean link) {
+        this.link = link;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getMessageText() {
