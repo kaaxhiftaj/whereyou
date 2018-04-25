@@ -219,13 +219,14 @@ public class HomeFragment extends Fragment implements LocationListener {
     @Override
     public void onDetach() {
         super.onDetach();
-        getChildFragmentManager().beginTransaction().remove(autocompleteFragment).commit();
-        getChildFragmentManager().beginTransaction().remove(mapFragment).commit();
+
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        getChildFragmentManager().beginTransaction().remove(autocompleteFragment).commit();
+        getChildFragmentManager().beginTransaction().remove(mapFragment).commit();
     }
 
     @Override

@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -44,6 +45,7 @@ public class ReviewsFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         reviewLocations = new ArrayList<>();
         myReviewsAdapter = new MyReviewsAdapter(getActivity(), reviewLocations);
+        recyclerView.setAdapter(myReviewsAdapter);
 
         if (alertDialog == null)
             alertDialog = AlertsUtils.createProgressDialog(getActivity());
@@ -54,7 +56,6 @@ public class ReviewsFragment extends Fragment {
         mFirebaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                recyclerView.setAdapter(myReviewsAdapter);
 
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                     if (dataSnapshot1.child("userId").getValue().equals(mAuth.getUid())) {
@@ -62,7 +63,11 @@ public class ReviewsFragment extends Fragment {
                         if (alertDialog != null)
                             alertDialog.dismiss();
                         reviewLocations.add(reviewLocation);
+                        myReviewsAdapter.notifyDataSetChanged();
                     }
+                }
+                if(reviewLocations.size()<1){
+                    Toast.makeText(getActivity(), "You haven't reviewed any place yet!", Toast.LENGTH_SHORT).show();
                 }
             }
 
