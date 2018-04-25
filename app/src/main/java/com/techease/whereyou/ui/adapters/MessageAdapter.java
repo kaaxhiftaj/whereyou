@@ -3,6 +3,8 @@ package com.techease.whereyou.ui.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -53,11 +55,19 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
+        ConstraintSet constraintSet = new ConstraintSet();
+
         if (holder instanceof ItemMessageFriendHolder) {
             if (chat.get(position).isLink()) {
+                constraintSet.clone(((ItemMessageFriendHolder) holder).constraintParentLayout);
                 ((ItemMessageFriendHolder) holder).textMessageBody.setVisibility(View.GONE);
                 ((ItemMessageFriendHolder) holder).imageUploaded.setVisibility(View.VISIBLE);
                 Glide.with(context).load(chat.get(position).getMessageText()).into(((ItemMessageFriendHolder) holder).imageUploaded);
+                constraintSet.connect(((ItemMessageFriendHolder) holder).textMessageTime.getId(), ConstraintSet.LEFT, ((ItemMessageFriendHolder) holder).imageUploaded.getId(), ConstraintSet.RIGHT);
+                constraintSet.connect(((ItemMessageFriendHolder) holder).textMessageTime.getId(), ConstraintSet.BOTTOM, ((ItemMessageFriendHolder) holder).imageUploaded.getId(), ConstraintSet.BOTTOM);
+                constraintSet.applyTo(((ItemMessageFriendHolder) holder).constraintParentLayout);
+                ((ItemMessageFriendHolder) holder).textMessageBody.setVisibility(View.GONE);
+
             } else {
                 ((ItemMessageFriendHolder) holder).textMessageBody.setVisibility(View.VISIBLE);
                 ((ItemMessageFriendHolder) holder).textMessageBody.setText(chat.get(position).getMessageText());
@@ -79,8 +89,13 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         } else if (holder instanceof ItemMessageUserHolder) {
             if (chat.get(position).isLink()) {
+                constraintSet.clone(((ItemMessageUserHolder) holder).constraintParentLayout);
                 ((ItemMessageUserHolder) holder).textMessageBody.setVisibility(View.GONE);
                 ((ItemMessageUserHolder) holder).imageUploaded.setVisibility(View.VISIBLE);
+                constraintSet.connect(((ItemMessageUserHolder) holder).textMessageTime.getId(), ConstraintSet.RIGHT, ((ItemMessageUserHolder) holder).imageUploaded.getId(), ConstraintSet.LEFT);
+                constraintSet.connect(((ItemMessageUserHolder) holder).textMessageTime.getId(), ConstraintSet.BOTTOM, ((ItemMessageUserHolder) holder).imageUploaded.getId(), ConstraintSet.BOTTOM);
+                constraintSet.applyTo(((ItemMessageUserHolder) holder).constraintParentLayout);
+                ((ItemMessageUserHolder) holder).textMessageBody.setVisibility(View.GONE);
                 Glide.with(context).load(chat.get(position).getMessageText()).into(((ItemMessageUserHolder) holder).imageUploaded);
             } else {
                 ((ItemMessageUserHolder) holder).textMessageBody.setVisibility(View.VISIBLE);
@@ -119,6 +134,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         TextView textMessageTime;
         @BindView(R.id.image_uploaded)
         ImageView imageUploaded;
+        @BindView(R.id.constraint_parent_layout)
+        ConstraintLayout constraintParentLayout;
 
         public ItemMessageUserHolder(View itemView) {
             super(itemView);
@@ -138,6 +155,8 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         TextView textMessageTime;
         @BindView(R.id.image_uploaded)
         ImageView imageUploaded;
+        @BindView(R.id.constraint_parent_layout)
+        ConstraintLayout constraintParentLayout;
 
         public ItemMessageFriendHolder(View itemView) {
             super(itemView);
