@@ -223,10 +223,16 @@ public class HomeFragment extends Fragment implements LocationListener {
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroyView() {
+        super.onDestroyView();
         getChildFragmentManager().beginTransaction().remove(autocompleteFragment).commit();
         getChildFragmentManager().beginTransaction().remove(mapFragment).commit();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
     }
 
     @Override
