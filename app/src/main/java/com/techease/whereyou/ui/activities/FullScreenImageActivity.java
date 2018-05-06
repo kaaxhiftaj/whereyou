@@ -25,7 +25,7 @@ import com.techease.whereyou.controllers.MyGlideApp;
 
 public class FullScreenImageActivity extends AppCompatActivity {
 
-    private TouchImageView mImageView;
+    private ImageView mImageView;
     private ImageView ivUser;
     private TextView tvUser;
     private ProgressDialog progressDialog;
@@ -62,7 +62,7 @@ public class FullScreenImageActivity extends AppCompatActivity {
 
     private void bindViews() {
         progressDialog = new ProgressDialog(this);
-        mImageView = (TouchImageView) findViewById(R.id.imageView);
+        mImageView = (ImageView) findViewById(R.id.imageView);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);

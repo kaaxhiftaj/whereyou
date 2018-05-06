@@ -2,7 +2,9 @@ package com.techease.whereyou.ui.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v7.widget.RecyclerView;
@@ -10,10 +12,15 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.firebase.auth.FirebaseAuth;
 import com.techease.whereyou.R;
 import com.techease.whereyou.ui.activities.ChatActivity;
@@ -54,7 +61,7 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder holder, final int position) {
         ConstraintSet constraintSet = new ConstraintSet();
 
         if (holder instanceof ItemMessageFriendHolder) {
@@ -62,11 +69,30 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 constraintSet.clone(((ItemMessageFriendHolder) holder).constraintParentLayout);
                 ((ItemMessageFriendHolder) holder).textMessageBody.setVisibility(View.GONE);
                 ((ItemMessageFriendHolder) holder).imageUploaded.setVisibility(View.VISIBLE);
-                Glide.with(context).load(chat.get(position).getMessageText()).into(((ItemMessageFriendHolder) holder).imageUploaded);
-                constraintSet.connect(((ItemMessageFriendHolder) holder).textMessageTime.getId(), ConstraintSet.LEFT, ((ItemMessageFriendHolder) holder).imageUploaded.getId(), ConstraintSet.RIGHT);
-                constraintSet.connect(((ItemMessageFriendHolder) holder).textMessageTime.getId(), ConstraintSet.BOTTOM, ((ItemMessageFriendHolder) holder).imageUploaded.getId(), ConstraintSet.BOTTOM);
+                constraintSet.connect(((ItemMessageFriendHolder) holder).textMessageTime.getId(), ConstraintSet.LEFT, ((ItemMessageFriendHolder) holder).frameLayout.getId(), ConstraintSet.RIGHT);
+                constraintSet.connect(((ItemMessageFriendHolder) holder).textMessageTime.getId(), ConstraintSet.BOTTOM, ((ItemMessageFriendHolder) holder).frameLayout.getId(), ConstraintSet.BOTTOM);
                 constraintSet.applyTo(((ItemMessageFriendHolder) holder).constraintParentLayout);
                 ((ItemMessageFriendHolder) holder).textMessageBody.setVisibility(View.GONE);
+                Glide.with(context).load(chat.get(position).getMessageText()).into(new SimpleTarget<Drawable>() {
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        ((ItemMessageFriendHolder) holder).progressBar.setVisibility(View.GONE);
+                        ((ItemMessageFriendHolder) holder).imageUploaded.setImageDrawable(resource);
+                    }
+
+                    @Override
+                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                        super.onLoadFailed(errorDrawable);
+                        Toast.makeText(context, "Load Fail", Toast.LENGTH_LONG).show();
+                        ((ItemMessageFriendHolder) holder).progressBar.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onLoadStarted(@Nullable Drawable placeholder) {
+                        super.onLoadStarted(placeholder);
+                        ((ItemMessageFriendHolder) holder).progressBar.setVisibility(View.VISIBLE);
+                    }
+                });;
 
             } else {
                 ((ItemMessageFriendHolder) holder).textMessageBody.setVisibility(View.VISIBLE);
@@ -92,11 +118,30 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 constraintSet.clone(((ItemMessageUserHolder) holder).constraintParentLayout);
                 ((ItemMessageUserHolder) holder).textMessageBody.setVisibility(View.GONE);
                 ((ItemMessageUserHolder) holder).imageUploaded.setVisibility(View.VISIBLE);
-                constraintSet.connect(((ItemMessageUserHolder) holder).textMessageTime.getId(), ConstraintSet.RIGHT, ((ItemMessageUserHolder) holder).imageUploaded.getId(), ConstraintSet.LEFT);
-                constraintSet.connect(((ItemMessageUserHolder) holder).textMessageTime.getId(), ConstraintSet.BOTTOM, ((ItemMessageUserHolder) holder).imageUploaded.getId(), ConstraintSet.BOTTOM);
+                constraintSet.connect(((ItemMessageUserHolder) holder).textMessageTime.getId(), ConstraintSet.RIGHT, ((ItemMessageUserHolder) holder).frameLayout.getId(), ConstraintSet.LEFT);
+                constraintSet.connect(((ItemMessageUserHolder) holder).textMessageTime.getId(), ConstraintSet.BOTTOM, ((ItemMessageUserHolder) holder).frameLayout.getId(), ConstraintSet.BOTTOM);
                 constraintSet.applyTo(((ItemMessageUserHolder) holder).constraintParentLayout);
                 ((ItemMessageUserHolder) holder).textMessageBody.setVisibility(View.GONE);
-                Glide.with(context).load(chat.get(position).getMessageText()).into(((ItemMessageUserHolder) holder).imageUploaded);
+                Glide.with(context).load(chat.get(position).getMessageText()).into(new SimpleTarget<Drawable>() {
+                    @Override
+                    public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                        ((ItemMessageUserHolder) holder).progressBar.setVisibility(View.GONE);
+                        ((ItemMessageUserHolder) holder).imageUploaded.setImageDrawable(resource);
+                    }
+
+                    @Override
+                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                        super.onLoadFailed(errorDrawable);
+                        Toast.makeText(context, "Load Fail", Toast.LENGTH_LONG).show();
+                        ((ItemMessageUserHolder) holder).progressBar.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onLoadStarted(@Nullable Drawable placeholder) {
+                        super.onLoadStarted(placeholder);
+                        ((ItemMessageUserHolder) holder).progressBar.setVisibility(View.VISIBLE);
+                    }
+                });
             } else {
                 ((ItemMessageUserHolder) holder).textMessageBody.setVisibility(View.VISIBLE);
                 ((ItemMessageUserHolder) holder).textMessageBody.setText(chat.get(position).getMessageText());
@@ -136,6 +181,10 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         ImageView imageUploaded;
         @BindView(R.id.constraint_parent_layout)
         ConstraintLayout constraintParentLayout;
+        @BindView(R.id.progress_bar)
+        ProgressBar progressBar;
+        @BindView(R.id.frame_layout)
+        FrameLayout frameLayout;
 
         public ItemMessageUserHolder(View itemView) {
             super(itemView);
@@ -157,6 +206,10 @@ public class MessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         ImageView imageUploaded;
         @BindView(R.id.constraint_parent_layout)
         ConstraintLayout constraintParentLayout;
+        @BindView(R.id.progress_bar)
+        ProgressBar progressBar;
+        @BindView(R.id.frame_layout)
+        FrameLayout frameLayout;
 
         public ItemMessageFriendHolder(View itemView) {
             super(itemView);

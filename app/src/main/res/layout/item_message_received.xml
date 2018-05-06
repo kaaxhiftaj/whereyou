@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/constraint_parent_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/constraint_parent_layout"
     android:paddingTop="8dp">
 
     <ImageView
@@ -50,13 +50,28 @@
         app:layout_constraintBottom_toBottomOf="@+id/text_message_body"
         app:layout_constraintLeft_toRightOf="@+id/text_message_body" />
 
-    <ImageView
-        android:id="@+id/image_uploaded"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/rounded_rectangle_green"
-        android:padding="1dp"
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:id="@+id/frame_layout"
+        android:layout_marginTop="10dp"
         app:layout_constraintLeft_toRightOf="@+id/image_message_profile"
-        app:layout_constraintTop_toBottomOf="@+id/text_message_name" />
+        app:layout_constraintTop_toBottomOf="@+id/text_message_name">
+
+        <ImageView
+            android:id="@+id/image_uploaded"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:background="@drawable/rounded_rectangle_green"
+            android:padding="1dp" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="gone" />
+    </FrameLayout>
 </android.support.constraint.ConstraintLayout>

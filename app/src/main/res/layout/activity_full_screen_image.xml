@@ -8,9 +8,9 @@
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
+        style="@style/FullScreen.TextAppearance.Title"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
-        style="@style/FullScreen.TextAppearance.Title"
         android:background="@color/colorPrimary"
         android:elevation="@dimen/elevation_header"
         tools:ignore="UnusedAttribute">
@@ -23,21 +23,22 @@
             android:layout_marginRight="@dimen/spacing_double"
             tools:ignore="UnusedAttribute" />
 
-        <TextView android:id="@+id/title"
+        <TextView
+            android:id="@+id/title"
+            style="@style/FullScreen.TextAppearance.Title.Inverse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            tools:ignore="PrivateResource"
-            style="@style/FullScreen.TextAppearance.Title.Inverse"
-            android:layout_gravity="center_vertical|start" />
+            android:layout_gravity="center_vertical|start"
+            tools:ignore="PrivateResource" />
 
     </android.support.v7.widget.Toolbar>
 
-    <com.techease.whereyou.ui.activities.TouchImageView
-        android:layout_below="@+id/toolbar"
+    <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@+id/toolbar"
         android:adjustViewBounds="true"
-        android:scaleType="fitCenter"/>
+        android:scaleType="fitCenter" />
 
 </RelativeLayout>
