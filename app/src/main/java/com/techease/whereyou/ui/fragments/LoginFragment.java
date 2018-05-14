@@ -2,15 +2,19 @@ package com.techease.whereyou.ui.fragments;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -47,7 +51,9 @@ public class LoginFragment extends Fragment {
     String email, password;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-    android.support.v7.app.AlertDialog alertDialog;
+    AlertDialog alertDialog;
+    @BindView(R.id.tv_forgot_password)
+    TextView tvForgotPassword;
     private FirebaseAuth mAuth;
 
     public static LoginFragment newInstance() {
@@ -85,12 +91,63 @@ public class LoginFragment extends Fragment {
         signin_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (alertDialog == null)
-                    alertDialog = AlertsUtils.createProgressDialog(getActivity());
-                alertDialog.show();
                 email = signin_email.getText().toString();
                 password = signin_password.getText().toString();
-                Signin(email, password);
+                if (signin_email.length() == 0) {
+                    signin_email.setError("Please enter your email address");
+                } else if ((!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches())) {
+                    signin_email.setError("Please enter a valid email address");
+                } else if (password.length() == 0) {
+                    signin_password.setError("Please enter your password");
+                } else {
+                    if (alertDialog == null)
+                        alertDialog = AlertsUtils.createProgressDialog(getActivity());
+                    alertDialog.show();
+                    Signin(email, password);
+                }
+            }
+        });
+        tvForgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (signin_email.length() == 0) {
+                    signin_email.setError("Please enter your email address");
+                } else if ((!android.util.Patterns.EMAIL_ADDRESS.matcher(signin_email.getText().toString()).matches())) {
+                    signin_email.setError("Please enter a valid email address");
+                } else {
+                    if (alertDialog == null)
+                        alertDialog = AlertsUtils.createProgressDialog(getActivity());
+                    alertDialog.show();
+                    FirebaseAuth.getInstance().sendPasswordResetEmail(signin_email.getText().toString())
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (alertDialog != null)
+                                        alertDialog.dismiss();
+                                    if (task.isSuccessful()) {
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                        builder.setMessage("We have sent you an email containing a link to reset your password.");
+                                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        });
+
+                                        final AlertDialog dialog1 = builder.create();
+                                        dialog1.setOnShowListener(new DialogInterface.OnShowListener() {
+                                            @Override
+                                            public void onShow(DialogInterface dialog) {
+                                                dialog1.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(getActivity(), R.color.colorPrimary));
+                                            }
+                                        });
+                                        dialog1.show();
+                                    } else {
+                                        Toast.makeText(getActivity(), "No such email found", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                }
             }
         });
 
@@ -127,4 +184,9 @@ public class LoginFragment extends Fragment {
     }
 
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+
+    }
 }
