@@ -41,4 +41,14 @@
         android:adjustViewBounds="true"
         android:scaleType="fitCenter" />
 
+    <Button
+        android:id="@+id/btn_save_to_device"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/imageView"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimaryDark"
+        android:text="Save Image to Device"
+        android:textColor="@color/colorPrimary" />
+
 </RelativeLayout>
