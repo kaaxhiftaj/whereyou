@@ -600,7 +600,7 @@ public class HomeFragment extends Fragment implements LocationListener {
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         String Uid = firebaseUser.getUid();
         DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        ReviewLocation reviewLocation = new ReviewLocation(Uid, String.valueOf(place.getAddress()), comment, place.getLatLng().latitude, place.getLatLng().longitude, rating);
+        ReviewLocation reviewLocation = new ReviewLocation(Uid, String.valueOf(place.getAddress()), comment, place.getLatLng().latitude, place.getLatLng().longitude, rating, null);
         database.child("ReviewLocation").child(place.getId()).setValue(reviewLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {

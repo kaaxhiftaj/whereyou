@@ -1,10 +1,9 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="#f3f3f3"
     android:orientation="vertical"
-    >
+    android:padding="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,29 +12,27 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#f3f3f3"
-            android:orientation="horizontal"
-            android:layout_marginTop="20dp">
+            android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/group_profile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:scaleType="fitXY"
                 android:layout_marginLeft="5dp"
-                android:src="@drawable/image"/>
+                android:scaleType="fitXY"
+                android:src="@drawable/image" />
 
             <TextView
                 android:id="@+id/review_location_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Location Name"
-                android:layout_toRightOf="@+id/group_profile"
-                android:textStyle="bold"
-                android:textColor="#000"
-                android:layout_marginTop="5dp"
                 android:layout_marginLeft="20dp"
-                android:textSize="16dp"/>
+                android:layout_marginTop="5dp"
+                android:layout_toRightOf="@+id/group_profile"
+                android:text="Location Name"
+                android:textColor="#000"
+                android:textSize="16dp"
+                android:textStyle="bold" />
 
             <me.zhanghai.android.materialratingbar.MaterialRatingBar
                 android:id="@+id/ratting_bar"
@@ -43,29 +40,36 @@
                 android:layout_height="20dp"
 
                 android:layout_below="@+id/review_location_name"
-                android:layout_toRightOf="@+id/group_profile"
                 android:layout_marginLeft="20dp"
-                />
+                android:layout_toRightOf="@+id/group_profile" />
 
             <TextView
                 android:id="@+id/reviews_comment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="comments"
                 android:layout_below="@+id/ratting_bar"
                 android:layout_marginLeft="90dp"
-                android:layout_marginTop="20dp"/>
+                android:layout_marginTop="20dp"
+                android:text="comments" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
                 android:layout_below="@+id/reviews_comment"
-                android:text="1 january 2018 at 12:30 pm"
+                android:layout_marginTop="15dp"
                 android:foregroundGravity="right"
                 android:gravity="right"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="15dp"/>
+                android:text="1 january 2018 at 12:30 pm" />
 
+            <ImageView
+                android:id="@+id/iv_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/group_profile"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="13dp"
+                android:src="@drawable/ic_delete" />
         </RelativeLayout>
     </LinearLayout>
 

@@ -60,13 +60,14 @@ public class ReviewsFragment extends Fragment {
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
                     if (dataSnapshot1.child("userId").getValue().equals(mAuth.getUid())) {
                         ReviewLocation reviewLocation = dataSnapshot1.getValue(ReviewLocation.class);
+                        reviewLocation.setReviewId(dataSnapshot1.getKey());
                         if (alertDialog != null)
                             alertDialog.dismiss();
                         reviewLocations.add(reviewLocation);
                         myReviewsAdapter.notifyDataSetChanged();
                     }
                 }
-                if(reviewLocations.size()<1){
+                if (reviewLocations.size() < 1) {
                     Toast.makeText(getActivity(), "You haven't reviewed any place yet!", Toast.LENGTH_SHORT).show();
                 }
             }

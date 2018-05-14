@@ -1,6 +1,7 @@
 package com.techease.whereyou.ui.adapters;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,7 +9,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.FirebaseDatabase;
 import com.techease.whereyou.R;
 import com.techease.whereyou.ui.models.ReviewLocation;
 
@@ -37,13 +41,26 @@ public class MyReviewsAdapter extends RecyclerView.Adapter<MyReviewsAdapter.MyVi
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(MyViewHolder holder, final int position) {
         final ReviewLocation model = myReviewsList.get(position);
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         holder.locationName.setText(model.getLocationName());
         holder.comment.setText(model.getComment());
         holder.ratingBar.setRating((float) model.getRatValue());
+        holder.ivDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseDatabase.getInstance().getReference().child("ReviewLocation").child(model.getReviewId()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        myReviewsList.remove(position);
+                        MyReviewsAdapter.this.notifyItemRemoved(position);
+                    }
+                });
+
+            }
+        });
 
 
     }
@@ -57,6 +74,7 @@ public class MyReviewsAdapter extends RecyclerView.Adapter<MyReviewsAdapter.MyVi
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         ImageView imageViewn;
+        ImageView ivDelete;
         TextView locationName, comment;
         me.zhanghai.android.materialratingbar.MaterialRatingBar ratingBar;
 
@@ -64,6 +82,7 @@ public class MyReviewsAdapter extends RecyclerView.Adapter<MyReviewsAdapter.MyVi
         public MyViewHolder(View itemView) {
             super(itemView);
             locationName = (TextView) itemView.findViewById(R.id.review_location_name);
+            ivDelete = (ImageView) itemView.findViewById(R.id.iv_delete);
             comment = (TextView) itemView.findViewById(R.id.reviews_comment);
             ratingBar = (me.zhanghai.android.materialratingbar.MaterialRatingBar) itemView.findViewById(R.id.ratting_bar);
         }

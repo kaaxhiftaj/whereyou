@@ -8,23 +8,31 @@ public class ReviewLocation {
     double lat, lon;
     private String userId, locationName, comment;
     private double ratValue;
+    private String reviewId;
 
 
     public ReviewLocation() {
-
     }
 
-    public ReviewLocation(String userId, String locationName, String comment, double lat, double lon, float ratValue) {
+    public ReviewLocation(String userId, String locationName, String comment, double lat, double lon, float ratValue, String reviewId) {
         this.userId = userId;
         this.comment = comment;
         this.locationName = locationName;
         this.lat = lat;
         this.lon = lon;
         this.ratValue = ratValue;
+        this.reviewId = reviewId;
 
 
     }
 
+    public String getReviewId() {
+        return reviewId;
+    }
+
+    public void setReviewId(String reviewId) {
+        this.reviewId = reviewId;
+    }
 
     public String getUserId() {
         return userId;
