@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -11,6 +12,7 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -37,15 +39,24 @@ import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.karumi.dexter.listener.single.PermissionListener;
 import com.techease.whereyou.R;
+import com.techease.whereyou.communication.Webdata;
+import com.techease.whereyou.interfaces.APIService;
 import com.techease.whereyou.ui.adapters.MessageAdapter;
 import com.techease.whereyou.ui.models.ChatMessage;
 import com.techease.whereyou.utils.GeneralUtils;
 
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -72,6 +83,8 @@ public class ChatActivity extends AppCompatActivity {
     List<ChatMessage> chat;
     String picturePath;
 
+    APIService apiService;
+    String placeId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +98,8 @@ public class ChatActivity extends AppCompatActivity {
         if (getIntent().hasExtra("comment")) {
             editWriteMessage.setText(getIntent().getStringExtra("comment"));
         }
+        placeId = getIntent().getStringExtra("place_id");
+        apiService = Webdata.getRetrofit().create(APIService.class);
     }
 
 
@@ -148,13 +163,70 @@ public class ChatActivity extends AppCompatActivity {
                                     FirebaseAuth.getInstance()
                                             .getCurrentUser()
                                             .getDisplayName(), FirebaseAuth.getInstance().getUid(), false)
-                            );
+                            ).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                new SendNotificationAsync().execute();
+                            }
+                        }
+                    });
                     editWriteMessage.setText("");
                 }
                 break;
             case R.id.btnAttach:
                 showPictureSelectionOptionDialog();
                 break;
+        }
+    }
+
+    private void sendNotification() {
+        URL url = null;
+        HttpURLConnection client = null;
+        try {
+            url = new URL("https://fcm.googleapis.com/fcm/send");
+            client = (HttpURLConnection) url.openConnection();
+            client.setDoOutput(true);
+
+            client.setRequestMethod("POST");
+            client.setRequestProperty("Content-Type", "application/json");
+            client.setRequestProperty("Accept", "application/json");
+            client.setRequestProperty("Authorization", "key=AAAAOO8n53Q:APA91bGMchibPMCnXCgs3inToLYZ6IoHjDgfDkoJsnUoQRjelHdB6EQzkDMrKW5FJdud4JxcipKHuQU2uyYsffuPT7aoWWqW92dJdQQV2-BSeuWQ3iNVS8AOTCgAVFEYSLUjm5T2pvJj");
+            client.connect();
+
+
+            JSONObject payload = new JSONObject();
+            payload.put("body", "New Review");
+            payload.put("title", "You have a new Review");
+
+            JSONObject data = new JSONObject();
+            data.put("user_id", FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+
+            JSONObject notif = new JSONObject();
+            notif.put("to", "/topics/" + placeId);
+            notif.put("notification", payload);
+            notif.put("data", data);
+
+            OutputStream outputPost = client.getOutputStream();
+            outputPost.write(notif.toString().getBytes("UTF-8"));
+            outputPost.flush();
+            outputPost.close();
+
+            // Read the response into a string
+            InputStream is = client.getInputStream();
+            String responseString = new Scanner(is, "UTF-8").useDelimiter("\\A").next();
+            Log.d("Response", responseString);
+            is.close();
+
+        } catch (Exception e) {
+            if (e.getMessage() != null) {
+                Log.e("SEND NOTIF TO FB", e.getMessage());
+            } else {
+                Log.e("SEND NOTIF TO FB", e.toString());
+            }
+        } finally {
+            if (client != null) client.disconnect();
         }
     }
 
@@ -318,6 +390,15 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private class SendNotificationAsync extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            sendNotification();
+            return null;
+        }
     }
 
 }

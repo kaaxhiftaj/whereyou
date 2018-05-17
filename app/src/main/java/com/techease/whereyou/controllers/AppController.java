@@ -7,6 +7,8 @@ import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 import android.support.v4.content.ContextCompat;
 
+import com.google.firebase.messaging.FirebaseMessaging;
+
 /**
  * Created by Jarvis on 6/14/2017.
  */

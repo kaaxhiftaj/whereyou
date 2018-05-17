@@ -52,6 +52,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.techease.whereyou.R;
 import com.techease.whereyou.ui.activities.ChatActivity;
 import com.techease.whereyou.ui.models.ReviewLocation;
@@ -577,6 +578,7 @@ public class HomeFragment extends Fragment implements LocationListener {
                             intent.putExtra("place_id", place.getId());
                             intent.putExtra("comment", etComment.getText().toString());
                             getActivity().startActivity(intent);
+                            FirebaseMessaging.getInstance().subscribeToTopic(place.getId());
                         } else {
                             placeComment(place, etComment.getText().toString(), ratingBar.getRating());
                         }
@@ -595,7 +597,7 @@ public class HomeFragment extends Fragment implements LocationListener {
         alertDialog.show();
     }
 
-    private void placeComment(Place place, String comment, float rating) {
+    private void placeComment(final Place place, String comment, float rating) {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         String Uid = firebaseUser.getUid();
@@ -606,6 +608,7 @@ public class HomeFragment extends Fragment implements LocationListener {
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     Log.d("usho", "review");
+                    FirebaseMessaging.getInstance().subscribeToTopic(place.getId());
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {

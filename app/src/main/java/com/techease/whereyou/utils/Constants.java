@@ -18,6 +18,7 @@ public class Constants {
 
     public static final int CONTENT_VIEW = 0;
     public static final int ERROR_VIEW = 1;
+    public static final String FIREBASE_FCM_TOKEN = "firebase_token";
 
     public static int FULLY_PAID_APPOINTMENT = 0;
     public static int PARTIALLY_PAID_APPOINTMENT = 1;

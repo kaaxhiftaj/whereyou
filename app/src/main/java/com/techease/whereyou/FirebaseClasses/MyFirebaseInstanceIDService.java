@@ -1,9 +1,15 @@
 package com.techease.whereyou.FirebaseClasses;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
+import com.techease.whereyou.utils.Configuration;
+import com.techease.whereyou.utils.Constants;
+
+import static com.techease.whereyou.controllers.AppController.context;
 
 /**
  * Created by kaxhiftaj on 1/31/18.
@@ -13,6 +19,8 @@ import com.google.firebase.iid.FirebaseInstanceIdService;
 public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
 
     private static final String TAG = "MyFirebaseIIDService";
+    SharedPreferences sharedPreferences;
+    SharedPreferences.Editor editor;
 
     /**
      * Called if InstanceID token is updated. This may occur if the security of
@@ -24,6 +32,10 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
     public void onTokenRefresh() {
         // Get updated InstanceID token.
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        sharedPreferences = context().getSharedPreferences(Configuration.MY_PREF, Context.MODE_PRIVATE);
+        editor = sharedPreferences.edit();
+        editor.putString(Constants.FIREBASE_FCM_TOKEN, refreshedToken);
+        editor.commit();
         Log.d("token", "Refreshed token: " + refreshedToken);
 
         // If you want to send messages to this application instance or
