@@ -13,6 +13,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.techease.whereyou.R;
 import com.techease.whereyou.ui.adapters.GroupsAdapter;
 import com.techease.whereyou.ui.models.GroupsModel;
@@ -53,6 +54,7 @@ public class GroupsFragment extends Fragment {
                     model.setGroupName(reviewLocation.getLocationName());
                     model.setRatingValue(reviewLocation.getRatValue());
                     model.setGroupId(dataSnapshot1.getKey());
+                    FirebaseMessaging.getInstance().subscribeToTopic(dataSnapshot1.getKey());
                     models.add(model);
                     if (alertDialog != null)
                         alertDialog.dismiss();

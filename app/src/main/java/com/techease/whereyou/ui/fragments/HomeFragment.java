@@ -492,12 +492,15 @@ public class HomeFragment extends Fragment implements LocationListener {
     }
 
     public void showMarkerDialog(final Place place) {
+        final ReviewLocation[] reviewLocation = {null};
         final boolean[] isPlaceExist = new boolean[1];
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("ReviewLocation");
+        final DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("ReviewLocation");
         database.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild(place.getId())) {
+                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren())
+                        reviewLocation[0] = dataSnapshot1.getValue(ReviewLocation.class);
                     isPlaceExist[0] = true;
                 }
                 final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
@@ -513,19 +516,29 @@ public class HomeFragment extends Fragment implements LocationListener {
                 btnReview.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        showReviewDialog(place);
+                        if (reviewLocation[0] != null)
+                            showReviewDialog(place, reviewLocation[0]);
+                        else
+                            showReviewDialog(place);
                         alertDialog.dismiss();
                     }
                 });
-                btnExisting.setOnClickListener(new View.OnClickListener() {
+                btnExisting.setOnClickListener(new View.OnClickListener()
+
+                {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(getActivity(), ChatActivity.class);
                         intent.putExtra("place_id", place.getId());
+                        if (reviewLocation[0] != null) {
+                            intent.putExtra("place_name", reviewLocation[0].getLocationName());
+                        }
                         getActivity().startActivity(intent);
                     }
                 });
-                if (!isPlaceExist[0]) {
+                if (!isPlaceExist[0])
+
+                {
                     btnExisting.setEnabled(false);
                 }
                 alertDialog.show();
@@ -538,6 +551,64 @@ public class HomeFragment extends Fragment implements LocationListener {
         });
 
 
+    }
+
+    private void showReviewDialog(final Place place, final ReviewLocation reviewLocation) {
+
+
+        final String strTextBox;
+        final float value;
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.custom_reviewdialog
+                , null);
+        dialogBuilder.setView(dialogView);
+        final AlertDialog alertDialog = dialogBuilder.create();
+        TextView tvTown = dialogView.findViewById(R.id.tvAddress);
+        tvTown.setText(place.getAddress());
+
+        Button btnReview = dialogView.findViewById(R.id.btnSubmitCustomDialogReview);
+        final RatingBar ratingBar = (RatingBar) dialogView.findViewById(R.id.ratingbar);
+        final EditText etComment = (EditText) dialogView.findViewById(R.id.etTextBox);
+        strTextBox = etComment.getText().toString();
+        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, final float v, boolean b) {
+                ratingBar.setRating(v);
+
+            }
+        });
+        btnReview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                DatabaseReference database = FirebaseDatabase.getInstance().getReference().child("ReviewLocation");
+                database.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.hasChild(place.getId())) {
+                            Intent intent = new Intent(getActivity(), ChatActivity.class);
+                            intent.putExtra("place_id", place.getId());
+                            intent.putExtra("place_name", reviewLocation.getLocationName());
+                            intent.putExtra("comment", etComment.getText().toString());
+                            getActivity().startActivity(intent);
+                            FirebaseMessaging.getInstance().subscribeToTopic(place.getId());
+                        } else {
+                            placeComment(place, etComment.getText().toString(), ratingBar.getRating());
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+
+                alertDialog.dismiss();
+
+            }
+        });
+        alertDialog.show();
     }
 
 

@@ -85,6 +85,7 @@ public class ChatActivity extends AppCompatActivity {
 
     APIService apiService;
     String placeId;
+    String placeName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +100,7 @@ public class ChatActivity extends AppCompatActivity {
             editWriteMessage.setText(getIntent().getStringExtra("comment"));
         }
         placeId = getIntent().getStringExtra("place_id");
+        placeName = getIntent().getStringExtra("place_name");
         apiService = Webdata.getRetrofit().create(APIService.class);
     }
 
@@ -196,11 +198,13 @@ public class ChatActivity extends AppCompatActivity {
 
 
             JSONObject payload = new JSONObject();
-            payload.put("body", "New Review");
-            payload.put("title", "You have a new Review");
+            payload.put("title", "New Review");
+            payload.put("body", "You have a new review on " + placeName);
 
             JSONObject data = new JSONObject();
             data.put("user_id", FirebaseAuth.getInstance().getCurrentUser().getUid());
+            data.put("place_id", placeId);
+            data.put("place_name", placeName);
 
 
             JSONObject notif = new JSONObject();
