@@ -491,12 +491,12 @@ public class HomeFragment extends Fragment implements LocationListener {
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16);
         final LatLngBounds DUBAI_BOUNDS = new LatLngBounds(new LatLng(24.5908366068, 54.84375),
                 new LatLng(25.3303729706, 55.6835174561));
-        mybound = toBounds(latLng, 1000);
+        mybound = toBounds(latLng, 10000);
 
         googleMap.setLatLngBoundsForCameraTarget(mybound);
 
         if (googleMap != null) {
-            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mybound, 14), new GoogleMap.CancelableCallback() {
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mybound, 20), new GoogleMap.CancelableCallback() {
                 @Override
                 public void onFinish() {
                     googleMap.getUiSettings().setScrollGesturesEnabled(false);
