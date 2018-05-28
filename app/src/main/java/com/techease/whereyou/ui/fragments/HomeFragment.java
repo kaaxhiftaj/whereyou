@@ -53,6 +53,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.maps.android.SphericalUtil;
 import com.techease.whereyou.R;
 import com.techease.whereyou.ui.activities.ChatActivity;
 import com.techease.whereyou.ui.models.ReviewLocation;
@@ -97,7 +98,7 @@ public class HomeFragment extends Fragment implements LocationListener {
     private LocationManager locationManager;
     private DatabaseReference mFirebaseDatabase;
     private HashMap<String, String> mHashMap = new HashMap<String, String>();
-
+    LatLngBounds mybound;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -127,7 +128,12 @@ public class HomeFragment extends Fragment implements LocationListener {
             public void onPlaceSelected(Place place) {
                 // TODO: Get info about the selected place.
                 Log.i("Place: ", place.getAddress().toString());
-                zoomToSearchedLocation(place);
+                if (mybound != null) {
+                    if (mybound.contains(place.getLatLng())) {
+                        zoomToSearchedLocation(place);
+                    }
+                }
+//                zoomToSearchedLocation(place);
                 bolFlag = true;
             }
 
@@ -191,10 +197,10 @@ public class HomeFragment extends Fragment implements LocationListener {
                     mHashMap.put(showMarker(reviewLocation).getId(), dataSnapshot1.getKey());
                     hasPoints = true;
                 }
-                if (hasPoints) {
-                    LatLngBounds bounds = builder.build();
-                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 80));
-                }
+//                if (hasPoints) {
+//                    LatLngBounds bounds = builder.build();
+//                    googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 80));
+//                }
             }
 
             @Override
@@ -255,7 +261,12 @@ public class HomeFragment extends Fragment implements LocationListener {
                 Log.i(TAG, "Place: " + place.getName());
                 //  strLocation = place.getAddress().toString();
                 bolFlag = true;
-                zoomToSearchedLocation(place);
+                if (mybound != null) {
+                    if (mybound.contains(place.getLatLng())) {
+                        zoomToSearchedLocation(place);
+                    }
+                }
+//                zoomToSearchedLocation(place);
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Status status = PlaceAutocomplete.getStatus(getActivity(), data);
                 // TODO: Handle the error.
@@ -464,16 +475,44 @@ public class HomeFragment extends Fragment implements LocationListener {
 
     }
 
+    public LatLngBounds toBounds(LatLng center, double radiusInMeters) {
+        double distanceFromCenterToCorner = radiusInMeters * Math.sqrt(2.0);
+        LatLng southwestCorner =
+                SphericalUtil.computeOffset(center, distanceFromCenterToCorner, 225.0);
+        LatLng northeastCorner =
+                SphericalUtil.computeOffset(center, distanceFromCenterToCorner, 45.0);
+        return new LatLngBounds(southwestCorner, northeastCorner);
+    }
+
     @Override
     public void onLocationChanged(Location location) {
-        if (!hasPoints) {
-            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16);
-            if (googleMap != null) {
-                googleMap.animateCamera(cameraUpdate);
-                locationManager.removeUpdates(this);
-            }
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16);
+        final LatLngBounds DUBAI_BOUNDS = new LatLngBounds(new LatLng(24.5908366068, 54.84375),
+                new LatLng(25.3303729706, 55.6835174561));
+        mybound = toBounds(latLng, 1000);
+
+        googleMap.setLatLngBoundsForCameraTarget(mybound);
+
+        if (googleMap != null) {
+            googleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(mybound, 14), new GoogleMap.CancelableCallback() {
+                @Override
+                public void onFinish() {
+                    googleMap.getUiSettings().setScrollGesturesEnabled(false);
+                    googleMap.setMinZoomPreference(14.0f);
+                    googleMap.setMaxZoomPreference(20.0f);
+                }
+
+                @Override
+                public void onCancel() {
+
+                }
+            });
+
+            locationManager.removeUpdates(this);
         }
+
     }
 
     @Override
