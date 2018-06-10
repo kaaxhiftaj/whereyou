@@ -57,6 +57,7 @@ import com.techease.whereyou.R;
 import com.techease.whereyou.ui.activities.ChatActivity;
 import com.techease.whereyou.ui.models.ReviewLocation;
 import com.techease.whereyou.utils.AlertsUtils;
+import com.techease.whereyou.utils.Haversine;
 import com.techease.whereyou.utils.InternetUtils;
 
 import java.util.ArrayList;
@@ -97,6 +98,7 @@ public class HomeFragment extends Fragment implements LocationListener {
     private LocationManager locationManager;
     private DatabaseReference mFirebaseDatabase;
     private HashMap<String, String> mHashMap = new HashMap<String, String>();
+    Location myCurrentLocation;
 
 
     @Override
@@ -466,6 +468,7 @@ public class HomeFragment extends Fragment implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
+        myCurrentLocation = location;
         if (!hasPoints) {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16);
@@ -516,9 +519,13 @@ public class HomeFragment extends Fragment implements LocationListener {
                 btnReview.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (reviewLocation[0] != null)
-                            showReviewDialog(place, reviewLocation[0]);
-                        else
+                        if (reviewLocation[0] != null) {
+                            if (Haversine.distance(place.getLatLng().latitude, place.getLatLng().longitude, myCurrentLocation.getLatitude(), myCurrentLocation.getLongitude()) <= 10) {
+                                showReviewDialog(place, reviewLocation[0]);
+                            } else {
+                                Toast.makeText(getActivity(), "You are too far from the request to join the discussion ", Toast.LENGTH_SHORT).show();
+                            }
+                        } else
                             showReviewDialog(place);
                         alertDialog.dismiss();
                     }
