@@ -87,7 +87,7 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.3.0'
     compile 'com.squareup.okhttp3:okhttp:3.9.1'
     compile 'com.squareup.retrofit2:converter-gson:2.3.0'
-    compile 'com.google.maps.android:android-maps-utils:0.4.4'
+    implementation 'com.google.maps.android:android-maps-utils:0.4.4'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 }
 apply plugin: 'com.google.gms.google-services'
