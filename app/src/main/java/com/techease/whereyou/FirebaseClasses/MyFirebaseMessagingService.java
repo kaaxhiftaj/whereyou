@@ -14,12 +14,11 @@ import android.util.Log;
 import com.firebase.jobdispatcher.FirebaseJobDispatcher;
 import com.firebase.jobdispatcher.GooglePlayDriver;
 import com.firebase.jobdispatcher.Job;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.techease.whereyou.R;
 import com.techease.whereyou.ui.activities.ChatActivity;
-import com.techease.whereyou.ui.activities.MainActivity;
-import com.techease.whereyou.ui.activities.SplashScreen;
 
 
 /**
@@ -60,8 +59,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
 
             // Handle message within 10 seconds
-//            if (!remoteMessage.getData().get("user_id").equals(FirebaseAuth.getInstance().getUid()))
-            handleNow(remoteMessage);
+            if (!remoteMessage.getData().get("user_id").equals(FirebaseAuth.getInstance().getUid()))
+                handleNow(remoteMessage);
 
 
         }

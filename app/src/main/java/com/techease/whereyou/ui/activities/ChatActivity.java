@@ -12,10 +12,12 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -78,6 +80,10 @@ public class ChatActivity extends AppCompatActivity {
     ImageButton btnSend;
     @BindView(R.id.btnAttach)
     ImageButton btnAttach;
+    @BindView(R.id.toolbar_title)
+    TextView toolbarTitle;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     private MessageAdapter adapter;
     List<ChatMessage> chat;
@@ -101,6 +107,7 @@ public class ChatActivity extends AppCompatActivity {
         }
         placeId = getIntent().getStringExtra("place_id");
         placeName = getIntent().getStringExtra("place_name");
+        toolbarTitle.setText(placeName);
         apiService = Webdata.getRetrofit().create(APIService.class);
     }
 
@@ -272,7 +279,7 @@ public class ChatActivity extends AppCompatActivity {
                     }
 
                     @Override
-                    public void onPermissionRationaleShouldBeShown(com.karumi.dexter.listener.PermissionRequest permission, PermissionToken token) {
+                    public void onPermissionRationaleShouldBeShown(PermissionRequest permission, PermissionToken token) {
                         token.continuePermissionRequest();
                     }
                 }).check();

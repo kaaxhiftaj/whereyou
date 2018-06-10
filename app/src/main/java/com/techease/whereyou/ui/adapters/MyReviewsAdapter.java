@@ -1,6 +1,8 @@
 package com.techease.whereyou.ui.adapters;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -51,13 +53,29 @@ public class MyReviewsAdapter extends RecyclerView.Adapter<MyReviewsAdapter.MyVi
         holder.ivDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseDatabase.getInstance().getReference().child("ReviewLocation").child(model.getReviewId()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Delete Review");
+                builder.setMessage("Are you sure want to delete this review");
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        myReviewsList.remove(position);
-                        MyReviewsAdapter.this.notifyItemRemoved(position);
+                    public void onClick(DialogInterface dialog, int which) {
+                        FirebaseDatabase.getInstance().getReference().child("ReviewLocation").child(model.getReviewId()).removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                myReviewsList.remove(position);
+                                MyReviewsAdapter.this.notifyItemRemoved(position);
+                            }
+                        });
+                        dialog.dismiss();
                     }
                 });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                builder.create().show();
 
             }
         });
