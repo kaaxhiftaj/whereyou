@@ -54,6 +54,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.techease.whereyou.R;
+import com.techease.whereyou.controllers.AppController;
 import com.techease.whereyou.ui.activities.ChatActivity;
 import com.techease.whereyou.ui.models.ReviewLocation;
 import com.techease.whereyou.utils.AlertsUtils;
@@ -469,6 +470,8 @@ public class HomeFragment extends Fragment implements LocationListener {
     @Override
     public void onLocationChanged(Location location) {
         myCurrentLocation = location;
+        AppController.USER_LOCATION_LAT = location.getLatitude();
+        AppController.USER_LOCATION_LONG = location.getLongitude();
         if (!hasPoints) {
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 16);
@@ -624,7 +627,7 @@ public class HomeFragment extends Fragment implements LocationListener {
         final String strTextBox;
         final float value;
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final LayoutInflater inflater = getActivity().getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.custom_reviewdialog
                 , null);
         dialogBuilder.setView(dialogView);
@@ -654,6 +657,9 @@ public class HomeFragment extends Fragment implements LocationListener {
                         if (dataSnapshot.hasChild(place.getId())) {
                             Intent intent = new Intent(getActivity(), ChatActivity.class);
                             intent.putExtra("place_id", place.getId());
+                            intent.putExtra("latitude", place.getLatLng().latitude);
+                            intent.putExtra("longitude", place.getLatLng().longitude);
+                            intent.putExtra("place_name", place.getName());
                             intent.putExtra("comment", etComment.getText().toString());
                             getActivity().startActivity(intent);
                             FirebaseMessaging.getInstance().subscribeToTopic(place.getId());
@@ -677,16 +683,17 @@ public class HomeFragment extends Fragment implements LocationListener {
 
     private void placeComment(final Place place, String comment, float rating) {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        final FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         String Uid = firebaseUser.getUid();
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        ReviewLocation reviewLocation = new ReviewLocation(Uid, String.valueOf(place.getAddress()), comment, place.getLatLng().latitude, place.getLatLng().longitude, rating, null);
+        final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        final ReviewLocation reviewLocation = new ReviewLocation(Uid, String.valueOf(place.getAddress()), comment, place.getLatLng().latitude, place.getLatLng().longitude, rating, null);
         database.child("ReviewLocation").child(place.getId()).setValue(reviewLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
                     Log.d("usho", "review");
                     FirebaseMessaging.getInstance().subscribeToTopic(place.getId());
+                    database.child("user").child(firebaseUser.getUid()).child("groups").child(place.getId()).setValue(reviewLocation);
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {

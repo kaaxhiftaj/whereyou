@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity
     String club_id;
     NavigationView navigationView;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

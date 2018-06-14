@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -17,7 +18,6 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.techease.whereyou.R;
 import com.techease.whereyou.ui.adapters.GroupsAdapter;
 import com.techease.whereyou.ui.models.GroupsModel;
-import com.techease.whereyou.ui.models.ReviewLocation;
 import com.techease.whereyou.utils.AlertsUtils;
 
 import java.util.ArrayList;
@@ -44,16 +44,18 @@ public class GroupsFragment extends Fragment {
         rvGroups.setAdapter(groupsAdapter);
         if (alertDialog == null)
             alertDialog = AlertsUtils.createProgressDialog(getActivity());
-        mFirebaseDatabase = FirebaseDatabase.getInstance().getReference().child("ReviewLocation");
+        mFirebaseDatabase = FirebaseDatabase.getInstance().getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("groups");
         mFirebaseDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-                    ReviewLocation reviewLocation = dataSnapshot1.getValue(ReviewLocation.class);
-                    GroupsModel model = new GroupsModel();
-                    model.setGroupName(reviewLocation.getLocationName());
-                    model.setRatingValue(reviewLocation.getRatValue());
-                    model.setGroupId(dataSnapshot1.getKey());
+                    GroupsModel model = dataSnapshot1.getValue(GroupsModel.class);
+//                    GroupsModel model = new GroupsModel();
+//                    model.setGroupName(reviewLocation.getLocationName());
+//                    model.setRatingValue(reviewLocation.getRatValue());
+//                    model.setGroupId(dataSnapshot1.getKey());
+//                    model.setLatitude(reviewLocation.getLat());
+//                    model.setLongitude(reviewLocation.getLon());
                     FirebaseMessaging.getInstance().subscribeToTopic(dataSnapshot1.getKey());
                     models.add(model);
                     if (alertDialog != null)

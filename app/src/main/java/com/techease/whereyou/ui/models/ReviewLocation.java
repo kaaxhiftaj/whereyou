@@ -22,8 +22,6 @@ public class ReviewLocation {
         this.lon = lon;
         this.ratValue = ratValue;
         this.reviewId = reviewId;
-
-
     }
 
     public String getReviewId() {

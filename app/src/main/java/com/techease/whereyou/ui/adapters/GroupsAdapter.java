@@ -46,7 +46,9 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.MyViewHold
             public void onClick(View view) {
                 Intent intent = new Intent(context, ChatActivity.class);
                 intent.putExtra("place_id", model.getGroupId());
-                intent.putExtra("place_name",model.getGroupName());
+                intent.putExtra("place_name", model.getGroupName());
+                intent.putExtra("latitude", model.getLatitude());
+                intent.putExtra("longitude", model.getLongitude());
                 context.startActivity(intent);
             }
         });

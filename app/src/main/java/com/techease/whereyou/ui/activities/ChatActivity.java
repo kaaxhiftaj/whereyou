@@ -3,6 +3,7 @@ package com.techease.whereyou.ui.activities;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -29,6 +30,7 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -42,10 +44,13 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import com.karumi.dexter.listener.single.PermissionListener;
 import com.techease.whereyou.R;
 import com.techease.whereyou.communication.Webdata;
+import com.techease.whereyou.controllers.AppController;
 import com.techease.whereyou.interfaces.APIService;
 import com.techease.whereyou.ui.adapters.MessageAdapter;
 import com.techease.whereyou.ui.models.ChatMessage;
+import com.techease.whereyou.ui.models.GroupsModel;
 import com.techease.whereyou.utils.GeneralUtils;
+import com.techease.whereyou.utils.Haversine;
 
 import org.json.JSONObject;
 
@@ -92,6 +97,7 @@ public class ChatActivity extends AppCompatActivity {
     APIService apiService;
     String placeId;
     String placeName;
+    double place_latitude, place_longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +113,14 @@ public class ChatActivity extends AppCompatActivity {
         }
         placeId = getIntent().getStringExtra("place_id");
         placeName = getIntent().getStringExtra("place_name");
+        place_latitude = getIntent().getDoubleExtra("latitude", 0.0);
+        place_longitude = getIntent().getDoubleExtra("longitude", 0.0);
+        if (Haversine.distance(place_latitude, place_longitude, AppController.USER_LOCATION_LAT, AppController.USER_LOCATION_LONG) > 10) {
+            btnSend.setClickable(false);
+            btnSend.setBackgroundColor(Color.GRAY);
+            btnAttach.setClickable(false);
+            btnAttach.setBackgroundColor(Color.GRAY);
+        }
         toolbarTitle.setText(placeName);
 
         apiService = Webdata.getRetrofit().create(APIService.class);
@@ -177,7 +191,10 @@ public class ChatActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()) {
+                                GroupsModel groupsModel = new GroupsModel(placeName, 0, placeId, place_latitude, place_longitude);
+                                checkIfGroupExists(groupsModel);
                                 new SendNotificationAsync().execute();
+
                             }
                         }
                     });
@@ -188,6 +205,24 @@ public class ChatActivity extends AppCompatActivity {
                 showPictureSelectionOptionDialog();
                 break;
         }
+    }
+
+    private void checkIfGroupExists(final GroupsModel groupsModel) {
+        FirebaseDatabase.getInstance()
+                .getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("groups").child(getIntent().getStringExtra("place_id")).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot == null) {
+                    FirebaseDatabase.getInstance()
+                            .getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("groups").child(getIntent().getStringExtra("place_id")).setValue(groupsModel);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void sendNotification() {
