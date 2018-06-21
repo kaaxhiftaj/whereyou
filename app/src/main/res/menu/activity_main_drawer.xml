@@ -20,7 +20,10 @@
         <item
             android:id="@+id/logout"
             android:title="LOGOUT" />
+        <item
+            android:id="@+id/version"
+            android:enabled="false"
+            android:title="Ver 1.0" />
     </group>
-
 
 </menu>

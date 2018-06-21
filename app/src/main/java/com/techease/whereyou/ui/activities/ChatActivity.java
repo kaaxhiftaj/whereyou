@@ -212,7 +212,7 @@ public class ChatActivity extends AppCompatActivity {
                 .getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("groups").child(getIntent().getStringExtra("place_id")).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot == null) {
+                if (dataSnapshot.getValue() == null) {
                     FirebaseDatabase.getInstance()
                             .getReference().child("user").child(FirebaseAuth.getInstance().getUid()).child("groups").child(getIntent().getStringExtra("place_id")).setValue(groupsModel);
                 }

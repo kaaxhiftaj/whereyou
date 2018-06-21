@@ -56,6 +56,7 @@ import com.google.firebase.messaging.FirebaseMessaging;
 import com.techease.whereyou.R;
 import com.techease.whereyou.controllers.AppController;
 import com.techease.whereyou.ui.activities.ChatActivity;
+import com.techease.whereyou.ui.models.GroupsModel;
 import com.techease.whereyou.ui.models.ReviewLocation;
 import com.techease.whereyou.utils.AlertsUtils;
 import com.techease.whereyou.utils.Haversine;
@@ -506,7 +507,8 @@ public class HomeFragment extends Fragment implements LocationListener {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild(place.getId())) {
                     for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren())
-                        reviewLocation[0] = dataSnapshot1.getValue(ReviewLocation.class);
+                        if (dataSnapshot1.getKey().equals(place.getId()))
+                            reviewLocation[0] = dataSnapshot1.getValue(ReviewLocation.class);
                     isPlaceExist[0] = true;
                 }
                 final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
@@ -523,8 +525,12 @@ public class HomeFragment extends Fragment implements LocationListener {
                     @Override
                     public void onClick(View view) {
                         if (reviewLocation[0] != null) {
-                            if (Haversine.distance(place.getLatLng().latitude, place.getLatLng().longitude, myCurrentLocation.getLatitude(), myCurrentLocation.getLongitude()) <= 10) {
-                                showReviewDialog(place, reviewLocation[0]);
+                            if (myCurrentLocation != null) {
+                                if (Haversine.distance(place.getLatLng().latitude, place.getLatLng().longitude, myCurrentLocation.getLatitude(), myCurrentLocation.getLongitude()) <= 10) {
+                                    showReviewDialog(place, reviewLocation[0]);
+                                } else {
+                                    Toast.makeText(getActivity(), "You are too far from the request to join the discussion ", Toast.LENGTH_SHORT).show();
+                                }
                             } else {
                                 Toast.makeText(getActivity(), "You are too far from the request to join the discussion ", Toast.LENGTH_SHORT).show();
                             }
@@ -569,7 +575,7 @@ public class HomeFragment extends Fragment implements LocationListener {
         final String strTextBox;
         final float value;
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final LayoutInflater inflater = getActivity().getLayoutInflater();
         final View dialogView = inflater.inflate(R.layout.custom_reviewdialog
                 , null);
         dialogBuilder.setView(dialogView);
@@ -601,6 +607,8 @@ public class HomeFragment extends Fragment implements LocationListener {
                             intent.putExtra("place_id", place.getId());
                             intent.putExtra("place_name", reviewLocation.getLocationName());
                             intent.putExtra("comment", etComment.getText().toString());
+                            intent.putExtra("latitude", reviewLocation.getLat());
+                            intent.putExtra("longitude", reviewLocation.getLon());
                             getActivity().startActivity(intent);
                             FirebaseMessaging.getInstance().subscribeToTopic(place.getId());
                         } else {
@@ -686,6 +694,7 @@ public class HomeFragment extends Fragment implements LocationListener {
         final FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
         String Uid = firebaseUser.getUid();
         final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+        final GroupsModel groupsModel = new GroupsModel(place.getAddress().toString(), rating, place.getId(), place.getLatLng().latitude, place.getLatLng().longitude);
         final ReviewLocation reviewLocation = new ReviewLocation(Uid, String.valueOf(place.getAddress()), comment, place.getLatLng().latitude, place.getLatLng().longitude, rating, null);
         database.child("ReviewLocation").child(place.getId()).setValue(reviewLocation).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -693,7 +702,7 @@ public class HomeFragment extends Fragment implements LocationListener {
                 if (task.isSuccessful()) {
                     Log.d("usho", "review");
                     FirebaseMessaging.getInstance().subscribeToTopic(place.getId());
-                    database.child("user").child(firebaseUser.getUid()).child("groups").child(place.getId()).setValue(reviewLocation);
+                    database.child("user").child(firebaseUser.getUid()).child("groups").child(place.getId()).setValue(groupsModel);
                 }
             }
         }).addOnFailureListener(new OnFailureListener() {
